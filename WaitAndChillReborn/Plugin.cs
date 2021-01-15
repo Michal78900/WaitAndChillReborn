@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
 using Exiled.API.Enums;
 using Exiled.API.Features;
+using Exiled.Loader;
+using System.Reflection;
 
 using PlayerEvent = Exiled.Events.Handlers.Player;
 using ServerEvent = Exiled.Events.Handlers.Server;
@@ -16,11 +19,13 @@ namespace WaitAndChillReborn
         public override PluginPriority Priority => PluginPriority.Medium;
 
         public override string Author => "Michal78900";
-        public override Version Version => new Version(1, 0, 0);
+        public override Version Version => new Version(1, 1, 0);
 
         private WaitAndChillReborn() { }
 
         private Handler handler;
+
+        public static bool ThereIsSubClass;
 
         public override void OnEnabled()
         {
@@ -36,13 +41,12 @@ namespace WaitAndChillReborn
 
             ServerEvent.RoundStarted += handler.OnRoundStarted;
 
-            
-
-
-
-
-
-
+            if (IsSubClass())
+            {
+                ThereIsSubClass = true;
+                Log.Debug("Advanced Subclassing plugin detected!");
+            }
+            else ThereIsSubClass = false;
         }
 
         public override void OnDisabled()
@@ -56,9 +60,14 @@ namespace WaitAndChillReborn
 
             ServerEvent.RoundStarted -= handler.OnRoundStarted;
 
-
-
             handler = null;
+        }
+
+        private static bool IsSubClass()
+        {
+            Assembly assembly = Loader.Plugins.FirstOrDefault(pl => pl.Name == "Subclass")?.Assembly;
+            if (assembly == null) return false;
+            else return true;
         }
     }
 }

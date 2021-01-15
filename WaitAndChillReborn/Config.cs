@@ -28,7 +28,7 @@ namespace WaitAndChillReborn
         [Description("Use hints instead of broadcasts for text stuff:")]
         public bool UseHints { get; set; } = true;
 
-        [Description("Determines the position of the Hint on the users screen (32 = Top, 0 = Middle)")]
+        [Description("Determines the position of the Hint on the users screen (32 = Top, 0 = Middle, -15 = Below)")]
         public int HintVertPos { get; set; } = 25;
 
         [Description("Text traslations:")]

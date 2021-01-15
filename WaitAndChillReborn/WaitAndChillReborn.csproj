@@ -68,6 +68,9 @@
     <Reference Include="NorthwoodLib">
       <HintPath>..\..\..\Exiled Stuff\Exiled dll\NorthwoodLib.dll</HintPath>
     </Reference>
+    <Reference Include="Subclass-1.2.15">
+      <HintPath>..\..\..\..\..\..\..\AppData\Roaming\EXILED\Plugins\Subclass-1.2.15.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
