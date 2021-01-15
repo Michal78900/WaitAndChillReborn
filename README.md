@@ -28,7 +28,7 @@ wait_and_chill_reborn:
   cola_multiplier: 4
   # Use hints instead of broadcasts for text stuff:
   use_hints: true
-  # Determines the position of the Hint on the users screen (32 = Top, 0 = Middle)
+  # Determines the position of the Hint on the users screen (32 = Top, 0 = Middle, -15 = Below)
   hint_vert_pos: 25
   # Text traslations:
   top_message: <size=40><color=yellow><b>The game will be starting soon, %seconds</b></color></size>
