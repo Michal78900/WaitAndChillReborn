@@ -18,6 +18,13 @@ wait_and_chill_reborn:
   is_enabled: true
   # Determines if any kind of message at all will be displayed
   display_wait_message: true
+  # List of lobbys (rooms) where players can spawn: (TOWER(1-3), SHELTER, 173)
+  lobby_room:
+  - TOWER1
+  - TOWER2
+  - TOWER3
+  - SHELTER
+  - 173
   # List of roles that players can spawn:
   roles_to_choose:
   - Tutorial
