@@ -19,7 +19,7 @@ namespace WaitAndChillReborn
         public override PluginPriority Priority => PluginPriority.Medium;
 
         public override string Author => "Michal78900";
-        public override Version Version => new Version(1, 1, 0);
+        public override Version Version => new Version(1, 2, 0);
 
         private WaitAndChillReborn() { }
 
@@ -32,7 +32,6 @@ namespace WaitAndChillReborn
             base.OnEnabled();
 
             handler = new Handler();
-
 
             ServerEvent.WaitingForPlayers += handler.OnWatingForPlayers;
 

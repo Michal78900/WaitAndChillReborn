@@ -7,8 +7,19 @@ namespace WaitAndChillReborn
     public class Config : IConfig
     {
         public bool IsEnabled { get; set; } = true;
+
         [Description("Determines if any kind of message at all will be displayed")]
         public bool DisplayWaitMessage { get; set; } = true;
+
+        [Description("List of lobbys (rooms) where players can spawn: (TOWER(1-3), SHELTER, 173)")]
+        public List<string> LobbyRoom { get; set; } = new List<string>
+        {
+            "TOWER1",
+            "TOWER2",
+            "TOWER3",
+            "SHELTER",
+            "173"
+        };
 
         [Description("List of roles that players can spawn:")]
         public List<RoleType> RolesToChoose { get; set; } = new List<RoleType>

@@ -15,15 +15,23 @@ namespace WaitAndChillReborn
     {
         System.Random rng = new System.Random();
 
-        Vector3 spawnTowerPos = new Vector3(54.81f, 1019.41f, -44.906f);
-
         StringBuilder message = new StringBuilder();
 
+        public List<Vector3> PossibleSpawnsPos = new List<Vector3>();
 
+        Vector3 ChoosedSpawnPos;
+
+        //148.6951f, 1019.447f, -19.06371f third tower
+        //223.1443f, 1026.775f, -18,15129f fourth tower
         public List<CoroutineHandle> coroutines = new List<CoroutineHandle>();
 
         public void OnWatingForPlayers()
         {
+            SpawnManager();
+
+            Scp173.TurnedPlayers.Clear();
+            Scp096.TurnedPlayers.Clear();
+
             if(WaitAndChillReborn.ThereIsSubClass)
             {
                 SubClassHandler(false);
@@ -58,17 +66,17 @@ namespace WaitAndChillReborn
                         Scp096.TurnedPlayers.Add(ev.Player);
                         Scp173.TurnedPlayers.Add(ev.Player);
                     }
+                });
+
+                Timing.CallDelayed(0.5f, () =>
+                {
+                    ev.Player.Position = ChoosedSpawnPos;
 
                     if (WaitAndChillReborn.Instance.Config.ColaMultiplier != 0)
                     {
                         ev.Player.ReferenceHub.playerEffectsController.EnableEffect<CustomPlayerEffects.Scp207>(999f, false);
                         ev.Player.ReferenceHub.playerEffectsController.ChangeEffectIntensity<CustomPlayerEffects.Scp207>(WaitAndChillReborn.Instance.Config.ColaMultiplier);
                     }
-                });
-
-                Timing.CallDelayed(0.5f, () =>
-                {
-                    ev.Player.Position = spawnTowerPos;
                 });
 
             }
@@ -183,6 +191,33 @@ namespace WaitAndChillReborn
         {
             if (enabled) Subclass.API.EnableAllClasses();
             else Subclass.API.DisableAllClasses();
+        }
+
+        public void SpawnManager()
+        {
+            PossibleSpawnsPos.Clear();
+
+            if (WaitAndChillReborn.Instance.Config.LobbyRoom.Contains("TOWER1")) PossibleSpawnsPos.Add(new Vector3(54.81f, 1019.41f, -44.906f));
+            if (WaitAndChillReborn.Instance.Config.LobbyRoom.Contains("TOWER2")) PossibleSpawnsPos.Add(new Vector3(148.6951f, 1019.447f, -19.06371f));
+            if (WaitAndChillReborn.Instance.Config.LobbyRoom.Contains("TOWER3")) PossibleSpawnsPos.Add(new Vector3(223.1443f, 1026.775f, -18.15129f));
+
+            if (WaitAndChillReborn.Instance.Config.LobbyRoom.Contains("SHELTER"))
+            {
+                foreach (Room room in Map.Rooms)
+                {
+                    if (room.Type == Exiled.API.Enums.RoomType.EzShelter)
+                    {
+                        var BrokenPos = room.transform.position;
+                        PossibleSpawnsPos.Add(new Vector3(BrokenPos.x, BrokenPos.y + 2f, BrokenPos.z));
+                    }
+                }
+            }
+
+            if (WaitAndChillReborn.Instance.Config.LobbyRoom.Contains("173")) PossibleSpawnsPos.Add(Map.GetRandomSpawnPoint(RoleType.Scp173));
+
+            PossibleSpawnsPos.ShuffleList();
+
+            ChoosedSpawnPos = PossibleSpawnsPos[0];
         }
     }
 }
