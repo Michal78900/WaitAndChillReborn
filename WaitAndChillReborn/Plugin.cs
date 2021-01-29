@@ -25,7 +25,8 @@ namespace WaitAndChillReborn
 
         private Handler handler;
 
-        public static bool ThereIsSubClass;
+        public static Assembly subclassAssembly;
+        public static bool ThereIsSubClass = false;
 
         public override void OnEnabled()
         {
@@ -40,12 +41,18 @@ namespace WaitAndChillReborn
 
             ServerEvent.RoundStarted += handler.OnRoundStarted;
 
-            if (IsSubClass())
+
+            if (Loader.Plugins.FirstOrDefault(pl => pl.Name == "Subclass") == null)
             {
-                ThereIsSubClass = true;
-                Log.Debug("Advanced Subclassing plugin detected!");
+                ThereIsSubClass = false;
+                return;
             }
-            else ThereIsSubClass = false;
+
+            subclassAssembly = Loader.Plugins.FirstOrDefault(pl => pl.Name == "Subclass").Assembly;
+
+            ThereIsSubClass = true;
+            Log.Debug("Advanced Subclassing plugin detected!");
+
         }
 
         public override void OnDisabled()
@@ -60,13 +67,6 @@ namespace WaitAndChillReborn
             ServerEvent.RoundStarted -= handler.OnRoundStarted;
 
             handler = null;
-        }
-
-        private static bool IsSubClass()
-        {
-            Assembly assembly = Loader.Plugins.FirstOrDefault(pl => pl.Name == "Subclass")?.Assembly;
-            if (assembly == null) return false;
-            else return true;
         }
     }
 }

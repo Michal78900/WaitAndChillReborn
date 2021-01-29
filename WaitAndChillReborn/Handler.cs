@@ -6,7 +6,6 @@ using Exiled.Events.EventArgs;
 using System.Collections.Generic;
 using MEC;
 using UnityEngine;
-using Subclass;
 
 
 namespace WaitAndChillReborn
@@ -32,7 +31,7 @@ namespace WaitAndChillReborn
             Scp173.TurnedPlayers.Clear();
             Scp096.TurnedPlayers.Clear();
 
-            if(WaitAndChillReborn.ThereIsSubClass)
+            if (WaitAndChillReborn.ThereIsSubClass)
             {
                 SubClassHandler(false);
             }
@@ -189,8 +188,18 @@ namespace WaitAndChillReborn
 
         public void SubClassHandler(bool enabled)
         {
-            if (enabled) Subclass.API.EnableAllClasses();
-            else Subclass.API.DisableAllClasses();
+            var extensions = WaitAndChillReborn.subclassAssembly.GetType("Subclass.API");
+            if (extensions == null) return;
+
+            if (enabled)
+            {
+                extensions.GetMethod("EnableAllClasses").Invoke(null, new object[] { });
+            }
+            else
+            {
+                extensions.GetMethod("DisableAllClasses").Invoke(null, new object[] { });
+            }
+
         }
 
         public void SpawnManager()
@@ -214,6 +223,8 @@ namespace WaitAndChillReborn
             }
 
             if (WaitAndChillReborn.Instance.Config.LobbyRoom.Contains("173")) PossibleSpawnsPos.Add(Map.GetRandomSpawnPoint(RoleType.Scp173));
+
+            if (WaitAndChillReborn.Instance.Config.LobbyRoom.Contains("106")) PossibleSpawnsPos.Add(Map.GetRandomSpawnPoint(RoleType.Scp106));
 
             PossibleSpawnsPos.ShuffleList();
 
