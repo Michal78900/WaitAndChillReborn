@@ -7,7 +7,7 @@ using System.Reflection;
 
 using PlayerEvent = Exiled.Events.Handlers.Player;
 using ServerEvent = Exiled.Events.Handlers.Server;
-using MapEvent = Exiled.Events.Handlers.Map;
+using Scp106Event = Exiled.Events.Handlers.Scp106;
 
 namespace WaitAndChillReborn
 {
@@ -19,7 +19,7 @@ namespace WaitAndChillReborn
         public override PluginPriority Priority => PluginPriority.Medium;
 
         public override string Author => "Michal78900";
-        public override Version Version => new Version(1, 2, 0);
+        public override Version Version => new Version(1, 3, 1);
 
         private WaitAndChillReborn() { }
 
@@ -38,6 +38,8 @@ namespace WaitAndChillReborn
 
             PlayerEvent.Joined += handler.OnPlayerJoin;
             PlayerEvent.Hurting += handler.OnHurting;
+            Scp106Event.CreatingPortal += handler.OnCreatingPortal;
+            Scp106Event.Teleporting += handler.OnTeleporting;
 
             ServerEvent.RoundStarted += handler.OnRoundStarted;
 
@@ -63,6 +65,8 @@ namespace WaitAndChillReborn
 
             PlayerEvent.Joined -= handler.OnPlayerJoin;
             PlayerEvent.Hurting -= handler.OnHurting;
+            Scp106Event.CreatingPortal -= handler.OnCreatingPortal;
+            Scp106Event.Teleporting -= handler.OnTeleporting;
 
             ServerEvent.RoundStarted -= handler.OnRoundStarted;
 

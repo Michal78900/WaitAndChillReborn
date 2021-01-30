@@ -49,7 +49,7 @@ namespace WaitAndChillReborn
 
         public void OnPlayerJoin(JoinedEventArgs ev)
         {
-            if (!Round.IsStarted)
+            if (!Round.IsStarted && (GameCore.RoundStart.singleton.NetworkTimer > 1 || GameCore.RoundStart.singleton.NetworkTimer == -2))
             {
                 Timing.CallDelayed(0.1f, () =>
                 {
@@ -84,6 +84,22 @@ namespace WaitAndChillReborn
         public void OnHurting(HurtingEventArgs ev)
         {
             if (!Round.IsStarted && ev.DamageType == DamageTypes.Scp207) ev.Amount = 0f;
+        }
+
+        public void OnCreatingPortal(CreatingPortalEventArgs ev)
+        {
+            if(!Round.IsStarted)
+            {
+                ev.IsAllowed = false;
+            }
+        }
+
+        public void OnTeleporting(TeleportingEventArgs ev)
+        {
+            if(!Round.IsStarted)
+            {
+                ev.IsAllowed = false;
+            }
         }
 
         public void OnRoundStarted()
@@ -223,8 +239,6 @@ namespace WaitAndChillReborn
             }
 
             if (WaitAndChillReborn.Instance.Config.LobbyRoom.Contains("173")) PossibleSpawnsPos.Add(Map.GetRandomSpawnPoint(RoleType.Scp173));
-
-            if (WaitAndChillReborn.Instance.Config.LobbyRoom.Contains("106")) PossibleSpawnsPos.Add(Map.GetRandomSpawnPoint(RoleType.Scp106));
 
             PossibleSpawnsPos.ShuffleList();
 
