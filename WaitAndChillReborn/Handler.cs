@@ -47,7 +47,7 @@ namespace WaitAndChillReborn
             if (WaitAndChillReborn.Instance.Config.DisplayWaitMessage) coroutines.Add(Timing.RunCoroutine(LobbyTimer()));
         }
 
-        public void OnPlayerJoin(JoinedEventArgs ev)
+        public void OnPlayerJoin(VerifiedEventArgs ev)
         {
             if (!Round.IsStarted && (GameCore.RoundStart.singleton.NetworkTimer > 1 || GameCore.RoundStart.singleton.NetworkTimer == -2))
             {

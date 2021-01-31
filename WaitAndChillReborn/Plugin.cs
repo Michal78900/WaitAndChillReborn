@@ -19,7 +19,7 @@ namespace WaitAndChillReborn
         public override PluginPriority Priority => PluginPriority.Medium;
 
         public override string Author => "Michal78900";
-        public override Version Version => new Version(1, 3, 1);
+        public override Version Version => new Version(1, 3, 2);
 
         private WaitAndChillReborn() { }
 
@@ -36,7 +36,7 @@ namespace WaitAndChillReborn
 
             ServerEvent.WaitingForPlayers += handler.OnWatingForPlayers;
 
-            PlayerEvent.Joined += handler.OnPlayerJoin;
+            PlayerEvent.Verified += handler.OnPlayerJoin;
             PlayerEvent.Hurting += handler.OnHurting;
             Scp106Event.CreatingPortal += handler.OnCreatingPortal;
             Scp106Event.Teleporting += handler.OnTeleporting;
@@ -63,7 +63,7 @@ namespace WaitAndChillReborn
 
             ServerEvent.WaitingForPlayers -= handler.OnWatingForPlayers;
 
-            PlayerEvent.Joined -= handler.OnPlayerJoin;
+            PlayerEvent.Verified -= handler.OnPlayerJoin;
             PlayerEvent.Hurting -= handler.OnHurting;
             Scp106Event.CreatingPortal -= handler.OnCreatingPortal;
             Scp106Event.Teleporting -= handler.OnTeleporting;

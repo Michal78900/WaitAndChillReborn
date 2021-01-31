@@ -44,19 +44,24 @@
     <Reference Include="CommandSystem.Core">
       <HintPath>..\..\..\Exiled Stuff\Exiled dll\CommandSystem.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Exiled.API">
+    <Reference Include="Exiled.API, Version=2.1.28.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Exiled Stuff\Exiled dll\Exiled.API.dll</HintPath>
     </Reference>
-    <Reference Include="Exiled.Events">
+    <Reference Include="Exiled.Events, Version=2.1.28.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Exiled Stuff\Exiled dll\Exiled.Events.dll</HintPath>
     </Reference>
-    <Reference Include="Exiled.Loader">
+    <Reference Include="Exiled.Loader, Version=2.1.28.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Exiled Stuff\Exiled dll\Exiled.Loader.dll</HintPath>
     </Reference>
-    <Reference Include="Exiled.Permissions">
+    <Reference Include="Exiled.Permissions, Version=2.1.28.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Exiled Stuff\Exiled dll\Exiled.Permissions.dll</HintPath>
     </Reference>
-    <Reference Include="Exiled.Updater">
+    <Reference Include="Exiled.Updater, Version=3.0.3.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Exiled Stuff\Exiled dll\Exiled.Updater.dll</HintPath>
     </Reference>
     <Reference Include="Mirror">
