@@ -13,26 +13,28 @@ namespace WaitAndChillReborn
 {
     public class WaitAndChillReborn : Plugin<Config>
     {
-        private static readonly Lazy<WaitAndChillReborn> LazyInstance = new Lazy<WaitAndChillReborn>(() => new WaitAndChillReborn());
-        public static WaitAndChillReborn Instance => LazyInstance.Value;
+        public static WaitAndChillReborn Singleton;
 
         public override PluginPriority Priority => PluginPriority.Medium;
 
         public override string Author => "Michal78900";
-        public override Version Version => new Version(1, 3, 2);
+        public override Version Version => new Version(2, 0, 0);
+        public override Version RequiredExiledVersion => new Version(2, 1, 29);
 
-        private WaitAndChillReborn() { }
+
 
         private Handler handler;
 
         public static Assembly subclassAssembly;
-        public static bool ThereIsSubClass = false;
 
         public override void OnEnabled()
         {
             base.OnEnabled();
 
-            handler = new Handler();
+            Singleton = this;
+
+            handler = new Handler(this);
+
 
             ServerEvent.WaitingForPlayers += handler.OnWatingForPlayers;
 
@@ -43,18 +45,17 @@ namespace WaitAndChillReborn
 
             ServerEvent.RoundStarted += handler.OnRoundStarted;
 
-
-            if (Loader.Plugins.FirstOrDefault(pl => pl.Name == "Subclass") == null)
+            Log.Debug($"Checking for Subclassing...", Config.ShowDebugMessages);
+            try
             {
-                ThereIsSubClass = false;
-                return;
+                subclassAssembly = Loader.Plugins.FirstOrDefault(pl => pl.Name == "Subclass").Assembly;
+
+                Log.Debug("Advanced Subclassing plugin detected!", Config.ShowDebugMessages);
             }
-
-            subclassAssembly = Loader.Plugins.FirstOrDefault(pl => pl.Name == "Subclass").Assembly;
-
-            ThereIsSubClass = true;
-            Log.Debug("Advanced Subclassing plugin detected!");
-
+            catch (Exception)
+            {
+                Log.Debug($"Subclass plugin is not installed", Config.ShowDebugMessages);
+            }
         }
 
         public override void OnDisabled()

@@ -7,6 +7,8 @@ namespace WaitAndChillReborn
     public class Config : IConfig
     {
         public bool IsEnabled { get; set; } = true;
+        [Description("Should debug messages be shown in a server console?")]
+        public bool ShowDebugMessages { get; set; } = false;
 
         [Description("Determines if any kind of message at all will be displayed")]
         public bool DisplayWaitMessage { get; set; } = true;

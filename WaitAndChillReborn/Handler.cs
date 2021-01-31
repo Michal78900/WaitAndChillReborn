@@ -12,6 +12,9 @@ namespace WaitAndChillReborn
 {
     class Handler
     {
+        private readonly WaitAndChillReborn plugin;
+        public Handler(WaitAndChillReborn plugin) => this.plugin = plugin;
+
         System.Random rng = new System.Random();
 
         StringBuilder message = new StringBuilder();
@@ -20,8 +23,7 @@ namespace WaitAndChillReborn
 
         Vector3 ChoosedSpawnPos;
 
-        //148.6951f, 1019.447f, -19.06371f third tower
-        //223.1443f, 1026.775f, -18,15129f fourth tower
+
         public List<CoroutineHandle> coroutines = new List<CoroutineHandle>();
 
         public void OnWatingForPlayers()
@@ -31,10 +33,9 @@ namespace WaitAndChillReborn
             Scp173.TurnedPlayers.Clear();
             Scp096.TurnedPlayers.Clear();
 
-            if (WaitAndChillReborn.ThereIsSubClass)
-            {
-                SubClassHandler(false);
-            }
+
+            SubClassHandler(false);
+
 
             GameObject.Find("StartRound").transform.localScale = Vector3.zero;
 
@@ -44,7 +45,7 @@ namespace WaitAndChillReborn
             }
             coroutines.Clear();
 
-            if (WaitAndChillReborn.Instance.Config.DisplayWaitMessage) coroutines.Add(Timing.RunCoroutine(LobbyTimer()));
+            if (plugin.Config.DisplayWaitMessage) coroutines.Add(Timing.RunCoroutine(LobbyTimer()));
         }
 
         public void OnPlayerJoin(VerifiedEventArgs ev)
@@ -53,14 +54,14 @@ namespace WaitAndChillReborn
             {
                 Timing.CallDelayed(0.1f, () =>
                 {
-                    ev.Player.Role = WaitAndChillReborn.Instance.Config.RolesToChoose[rng.Next(WaitAndChillReborn.Instance.Config.RolesToChoose.Count)];
+                    ev.Player.Role = plugin.Config.RolesToChoose[rng.Next(plugin.Config.RolesToChoose.Count)];
 
-                    if (!WaitAndChillReborn.Instance.Config.AlowDamage)
+                    if (!plugin.Config.AlowDamage)
                     {
                         ev.Player.IsGodModeEnabled = true;
                     }
 
-                    if (WaitAndChillReborn.Instance.Config.TurnedPlayers)
+                    if (plugin.Config.TurnedPlayers)
                     {
                         Scp096.TurnedPlayers.Add(ev.Player);
                         Scp173.TurnedPlayers.Add(ev.Player);
@@ -71,10 +72,10 @@ namespace WaitAndChillReborn
                 {
                     ev.Player.Position = ChoosedSpawnPos;
 
-                    if (WaitAndChillReborn.Instance.Config.ColaMultiplier != 0)
+                    if (plugin.Config.ColaMultiplier != 0)
                     {
                         ev.Player.ReferenceHub.playerEffectsController.EnableEffect<CustomPlayerEffects.Scp207>(999f, false);
-                        ev.Player.ReferenceHub.playerEffectsController.ChangeEffectIntensity<CustomPlayerEffects.Scp207>(WaitAndChillReborn.Instance.Config.ColaMultiplier);
+                        ev.Player.ReferenceHub.playerEffectsController.ChangeEffectIntensity<CustomPlayerEffects.Scp207>(plugin.Config.ColaMultiplier);
                     }
                 });
 
@@ -88,7 +89,7 @@ namespace WaitAndChillReborn
 
         public void OnCreatingPortal(CreatingPortalEventArgs ev)
         {
-            if(!Round.IsStarted)
+            if (!Round.IsStarted)
             {
                 ev.IsAllowed = false;
             }
@@ -96,7 +97,7 @@ namespace WaitAndChillReborn
 
         public void OnTeleporting(TeleportingEventArgs ev)
         {
-            if(!Round.IsStarted)
+            if (!Round.IsStarted)
             {
                 ev.IsAllowed = false;
             }
@@ -104,14 +105,11 @@ namespace WaitAndChillReborn
 
         public void OnRoundStarted()
         {
-            if (WaitAndChillReborn.ThereIsSubClass)
-            {
-                SubClassHandler(true);
-            }
+            SubClassHandler(true);
 
             Timing.CallDelayed(0.25f, () =>
             {
-                if (!WaitAndChillReborn.Instance.Config.AlowDamage)
+                if (!plugin.Config.AlowDamage)
                 {
                     foreach (Player ply in Player.List)
                     {
@@ -119,13 +117,13 @@ namespace WaitAndChillReborn
                     }
                 }
 
-                if (WaitAndChillReborn.Instance.Config.TurnedPlayers)
+                if (plugin.Config.TurnedPlayers)
                 {
                     Scp096.TurnedPlayers.Clear();
                     Scp173.TurnedPlayers.Clear();
                 }
 
-                if (WaitAndChillReborn.Instance.Config.ColaMultiplier != 0)
+                if (plugin.Config.ColaMultiplier != 0)
                 {
                     foreach (Player ply in Player.List)
                     {
@@ -148,43 +146,41 @@ namespace WaitAndChillReborn
             {
                 message.Clear();
 
-                if (WaitAndChillReborn.Instance.Config.HintVertPos != 0 && WaitAndChillReborn.Instance.Config.HintVertPos < 0)
+                if (plugin.Config.HintVertPos != 0 && plugin.Config.HintVertPos < 0)
                 {
-                    for (int i = WaitAndChillReborn.Instance.Config.HintVertPos; i < 0; i++)
+                    for (int i = plugin.Config.HintVertPos; i < 0; i++)
                     {
                         message.Append("\n");
                     }
                 }
 
 
-                message.Append(WaitAndChillReborn.Instance.Config.TopMessage);
+                message.Append(plugin.Config.TopMessage);
 
                 short NetworkTimer = GameCore.RoundStart.singleton.NetworkTimer;
 
                 switch (NetworkTimer)
                 {
-                    case -2: message.Replace("%seconds", WaitAndChillReborn.Instance.Config.ServerIsPaused); break;
+                    case -2: message.Replace("%seconds", plugin.Config.ServerIsPaused); break;
 
-                    case -1: message.Replace("%seconds", WaitAndChillReborn.Instance.Config.RoundIsBeingStarted); break;
+                    case -1: message.Replace("%seconds", plugin.Config.RoundIsBeingStarted); break;
 
-                    case 1: message.Replace("%seconds", $"{NetworkTimer} {WaitAndChillReborn.Instance.Config.OneSecondRemain}"); break;
+                    case 1: message.Replace("%seconds", $"{NetworkTimer} {plugin.Config.OneSecondRemain}"); break;
 
-                    case 0: message.Replace("%seconds", WaitAndChillReborn.Instance.Config.RoundIsBeingStarted); break;
+                    case 0: message.Replace("%seconds", plugin.Config.RoundIsBeingStarted); break;
 
-                    default: message.Replace("%seconds", $"{NetworkTimer} {WaitAndChillReborn.Instance.Config.XSecondsRemains}"); break;
+                    default: message.Replace("%seconds", $"{NetworkTimer} {plugin.Config.XSecondsRemains}"); break;
                 }
 
-                int NumOfPlayers = Player.List.Count();
+                message.Append($"\n{plugin.Config.BottomMessage}");
 
-                message.Append($"\n{WaitAndChillReborn.Instance.Config.BottomMessage}");
-
-                if (NumOfPlayers == 1) message.Replace("%players", $"{NumOfPlayers} {WaitAndChillReborn.Instance.Config.OnePlayerConnected}");
-                else message.Replace("%players", $"{NumOfPlayers} {WaitAndChillReborn.Instance.Config.XPlayersConnected}");
+                if (Player.List.Count() == 1) message.Replace("%players", $"{Player.List.Count()} {plugin.Config.OnePlayerConnected}");
+                else message.Replace("%players", $"{Player.List.Count()} {plugin.Config.XPlayersConnected}");
 
 
-                if (WaitAndChillReborn.Instance.Config.HintVertPos != 0 && WaitAndChillReborn.Instance.Config.HintVertPos > 0)
+                if (plugin.Config.HintVertPos != 0 && plugin.Config.HintVertPos > 0)
                 {
-                    for (int i = 0; i < WaitAndChillReborn.Instance.Config.HintVertPos; i++)
+                    for (int i = 0; i < plugin.Config.HintVertPos; i++)
                     {
                         message.Append("\n");
                     }
@@ -193,7 +189,7 @@ namespace WaitAndChillReborn
 
                 foreach (Player ply in Player.List)
                 {
-                    if (WaitAndChillReborn.Instance.Config.UseHints) ply.ShowHint(message.ToString(), 1f);
+                    if (plugin.Config.UseHints) ply.ShowHint(message.ToString(), 1f);
                     else ply.Broadcast(1, message.ToString());
                 }
 
@@ -204,29 +200,34 @@ namespace WaitAndChillReborn
 
         public void SubClassHandler(bool enabled)
         {
-            var extensions = WaitAndChillReborn.subclassAssembly.GetType("Subclass.API");
-            if (extensions == null) return;
-
-            if (enabled)
+            try
             {
-                extensions.GetMethod("EnableAllClasses").Invoke(null, new object[] { });
-            }
-            else
-            {
-                extensions.GetMethod("DisableAllClasses").Invoke(null, new object[] { });
-            }
+                var extensions = WaitAndChillReborn.subclassAssembly.GetType("Subclass.API");
+                if (extensions == null) return;
 
+                if (enabled)
+                {
+                    extensions.GetMethod("EnableAllClasses").Invoke(null, new object[] { });
+                    Log.Debug("Enabled all Subclasses", plugin.Config.ShowDebugMessages);
+                }
+                else
+                {
+                    extensions.GetMethod("DisableAllClasses").Invoke(null, new object[] { });
+                    Log.Debug("Disabled all Subclasses", plugin.Config.ShowDebugMessages);
+                }
+            }
+            catch (Exception) { }
         }
 
         public void SpawnManager()
         {
             PossibleSpawnsPos.Clear();
 
-            if (WaitAndChillReborn.Instance.Config.LobbyRoom.Contains("TOWER1")) PossibleSpawnsPos.Add(new Vector3(54.81f, 1019.41f, -44.906f));
-            if (WaitAndChillReborn.Instance.Config.LobbyRoom.Contains("TOWER2")) PossibleSpawnsPos.Add(new Vector3(148.6951f, 1019.447f, -19.06371f));
-            if (WaitAndChillReborn.Instance.Config.LobbyRoom.Contains("TOWER3")) PossibleSpawnsPos.Add(new Vector3(223.1443f, 1026.775f, -18.15129f));
+            if (plugin.Config.LobbyRoom.Contains("TOWER1")) PossibleSpawnsPos.Add(new Vector3(54.81f, 1019.41f, -44.906f));
+            if (plugin.Config.LobbyRoom.Contains("TOWER2")) PossibleSpawnsPos.Add(new Vector3(148.6951f, 1019.447f, -19.06371f));
+            if (plugin.Config.LobbyRoom.Contains("TOWER3")) PossibleSpawnsPos.Add(new Vector3(223.1443f, 1026.775f, -18.15129f));
 
-            if (WaitAndChillReborn.Instance.Config.LobbyRoom.Contains("SHELTER"))
+            if (plugin.Config.LobbyRoom.Contains("SHELTER"))
             {
                 foreach (Room room in Map.Rooms)
                 {
@@ -238,7 +239,7 @@ namespace WaitAndChillReborn
                 }
             }
 
-            if (WaitAndChillReborn.Instance.Config.LobbyRoom.Contains("173")) PossibleSpawnsPos.Add(Map.GetRandomSpawnPoint(RoleType.Scp173));
+            if (plugin.Config.LobbyRoom.Contains("173")) PossibleSpawnsPos.Add(Map.GetRandomSpawnPoint(RoleType.Scp173));
 
             PossibleSpawnsPos.ShuffleList();
 
