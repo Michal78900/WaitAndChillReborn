@@ -15,16 +15,25 @@ Remade version of this plugin: https://github.com/TruthfullyHonest/WaitAndChill
 # Config
 ```yml
 wait_and_chill_reborn:
+  wait_and_chill_reborn:
   is_enabled: true
+  # Should debug messages be shown in a server console?
+  show_debug_messages: false
   # Determines if any kind of message at all will be displayed
   display_wait_message: true
-  # List of lobbys (rooms) where players can spawn: (TOWER(1-3), SHELTER, 173)
+  # List of lobbys (rooms) where players can spawn: (TOWER(1-3), SHELTER, GR18, 079, 106, 173, 939, GATE_A, GATE_B)
   lobby_room:
   - TOWER1
   - TOWER2
   - TOWER3
+  - GATE_A
+  - GATE_B
   - SHELTER
+  - GR18
+  - 079
+  - 106
   - 173
+  - 939
   # List of roles that players can spawn:
   roles_to_choose:
   - Tutorial
