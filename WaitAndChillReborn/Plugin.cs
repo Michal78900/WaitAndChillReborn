@@ -18,10 +18,8 @@ namespace WaitAndChillReborn
         public override PluginPriority Priority => PluginPriority.Medium;
 
         public override string Author => "Michal78900";
-        public override Version Version => new Version(2, 0, 0);
-        public override Version RequiredExiledVersion => new Version(2, 1, 29);
-
-
+        public override Version Version => new Version(2, 1, 0);
+        public override Version RequiredExiledVersion => new Version(2, 1, 32);
 
         private Handler handler;
 
@@ -40,10 +38,15 @@ namespace WaitAndChillReborn
 
             PlayerEvent.Verified += handler.OnPlayerJoin;
             PlayerEvent.Hurting += handler.OnHurting;
+            PlayerEvent.PickingUpItem += handler.OnItemPickup;
+            PlayerEvent.InteractingDoor += handler.OnDoor;
+            PlayerEvent.InteractingElevator += handler.OnElevator;
+
             Scp106Event.CreatingPortal += handler.OnCreatingPortal;
             Scp106Event.Teleporting += handler.OnTeleporting;
 
             ServerEvent.RoundStarted += handler.OnRoundStarted;
+
 
             Log.Debug($"Checking for Subclassing...", Config.ShowDebugMessages);
             try
@@ -66,6 +69,10 @@ namespace WaitAndChillReborn
 
             PlayerEvent.Verified -= handler.OnPlayerJoin;
             PlayerEvent.Hurting -= handler.OnHurting;
+            PlayerEvent.PickingUpItem -= handler.OnItemPickup;
+            PlayerEvent.InteractingDoor -= handler.OnDoor;
+            PlayerEvent.InteractingElevator -= handler.OnElevator;
+
             Scp106Event.CreatingPortal -= handler.OnCreatingPortal;
             Scp106Event.Teleporting -= handler.OnTeleporting;
 

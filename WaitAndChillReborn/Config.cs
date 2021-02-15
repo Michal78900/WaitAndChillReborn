@@ -13,14 +13,20 @@ namespace WaitAndChillReborn
         [Description("Determines if any kind of message at all will be displayed")]
         public bool DisplayWaitMessage { get; set; } = true;
 
-        [Description("List of lobbys (rooms) where players can spawn: (TOWER(1-3), SHELTER, 173)")]
+        [Description("List of lobbys (rooms) where players can spawn: (TOWER(1-3), SHELTER, GR18, 079, 106, 173, 939, GATE_A, GATE_B)")]
         public List<string> LobbyRoom { get; set; } = new List<string>
         {
             "TOWER1",
             "TOWER2",
             "TOWER3",
+            "GATE_A",
+            "GATE_B",
             "SHELTER",
-            "173"
+            "GR18",
+            "079",
+            "106",
+            "173",
+            "939",
         };
 
         [Description("List of roles that players can spawn:")]
