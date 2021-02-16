@@ -7,6 +7,7 @@ using Exiled.API.Enums;
 using System.Collections.Generic;
 using MEC;
 using UnityEngine;
+using Mirror;
 using Interactables.Interobjects.DoorUtils;
 
 
@@ -82,14 +83,25 @@ namespace WaitAndChillReborn
             }
         }
 
+
+        bool IsLobby => !Round.IsStarted && !RoundSummary.singleton._roundEnded;
+
+        public void OnPlacingBlood(PlacingBloodEventArgs ev)
+        {
+            if (IsLobby)
+            {
+                ev.IsAllowed = false;
+            }
+        }
+
         public void OnHurting(HurtingEventArgs ev)
         {
-            if (!Round.IsStarted && ev.DamageType == DamageTypes.Scp207) ev.Amount = 0f;
+            if (IsLobby && ev.DamageType == DamageTypes.Scp207) ev.Amount = 0f;
         }
 
         public void OnItemPickup(PickingUpItemEventArgs ev)
         {
-            if (!Round.IsStarted)
+            if (IsLobby)
             {
                 ev.IsAllowed = false;
             }
@@ -97,7 +109,7 @@ namespace WaitAndChillReborn
 
         public void OnDoor(InteractingDoorEventArgs ev)
         {
-            if (!Round.IsStarted)
+            if (IsLobby)
             {
                 ev.IsAllowed = false;
             }
@@ -105,7 +117,7 @@ namespace WaitAndChillReborn
 
         public void OnElevator(InteractingElevatorEventArgs ev)
         {
-            if (!Round.IsStarted)
+            if (IsLobby)
             {
                 ev.IsAllowed = false;
             }
@@ -113,7 +125,7 @@ namespace WaitAndChillReborn
 
         public void OnCreatingPortal(CreatingPortalEventArgs ev)
         {
-            if (!Round.IsStarted)
+            if (IsLobby)
             {
                 ev.IsAllowed = false;
             }
@@ -121,11 +133,12 @@ namespace WaitAndChillReborn
 
         public void OnTeleporting(TeleportingEventArgs ev)
         {
-            if (!Round.IsStarted)
+            if (IsLobby)
             {
                 ev.IsAllowed = false;
             }
         }
+
 
 
         public void OnRoundStarted()
