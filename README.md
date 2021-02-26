@@ -15,7 +15,6 @@ Remade version of this plugin: https://github.com/TruthfullyHonest/WaitAndChill
 # Config
 ```yml
 wait_and_chill_reborn:
-  wait_and_chill_reborn:
   is_enabled: true
   # Should debug messages be shown in a server console?
   show_debug_messages: false
@@ -34,11 +33,13 @@ wait_and_chill_reborn:
   - 106
   - 173
   - 939
+  # Instead of choosing one lobby room, should plugin use all of lobby rooms on the list? Player when they join will be teleported to the random lobby room.
+  multiple_rooms: false
   # List of roles that players can spawn:
   roles_to_choose:
   - Tutorial
   # Allow dealing damage to other players, while in lobby:
-  alow_damage: false
+  allow_damage: false
   # Disallow players triggering SCP-096 and stopping from moving SCP-173, while in lobby:
   turned_players: true
   # Give players an effect of SCP-207, while in lobby: (set 0 to disable)
