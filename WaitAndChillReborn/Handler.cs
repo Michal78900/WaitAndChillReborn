@@ -51,13 +51,15 @@ namespace WaitAndChillReborn
 
         public void OnPlayerJoin(VerifiedEventArgs ev)
         {
+            var componentsVerified = ev.Player.GameObject.GetComponents(typeof(Component));
+
             if (!Round.IsStarted && (GameCore.RoundStart.singleton.NetworkTimer > 1 || GameCore.RoundStart.singleton.NetworkTimer == -2))
             {
                 Timing.CallDelayed(0.1f, () =>
                 {
                     ev.Player.Role = plugin.Config.RolesToChoose[rng.Next(plugin.Config.RolesToChoose.Count)];
 
-                    if (!plugin.Config.AlowDamage)
+                    if (!plugin.Config.AllowDamage)
                     {
                         ev.Player.IsGodModeEnabled = true;
                     }
@@ -71,7 +73,12 @@ namespace WaitAndChillReborn
 
                 Timing.CallDelayed(0.5f, () =>
                 {
-                    ev.Player.Position = ChoosedSpawnPos;
+                    if (!plugin.Config.MultipleRooms) ev.Player.Position = ChoosedSpawnPos;
+
+                    else
+                    {
+                        ev.Player.Position = PossibleSpawnsPos[rng.Next(PossibleSpawnsPos.Count)];
+                    }
 
                     if (plugin.Config.ColaMultiplier != 0)
                     {
@@ -147,7 +154,7 @@ namespace WaitAndChillReborn
 
             Timing.CallDelayed(0.25f, () =>
             {
-                if (!plugin.Config.AlowDamage)
+                if (!plugin.Config.AllowDamage)
                 {
                     foreach (Player ply in Player.List)
                     {

@@ -29,6 +29,9 @@ namespace WaitAndChillReborn
             "939",
         };
 
+        [Description("Instead of choosing one lobby room, should plugin use all of lobby rooms on the list? Player when they join will be teleported to the random lobby room.")]
+        public bool MultipleRooms { get; set; } = false;
+
         [Description("List of roles that players can spawn:")]
         public List<RoleType> RolesToChoose { get; set; } = new List<RoleType>
         {
@@ -36,7 +39,7 @@ namespace WaitAndChillReborn
         };
 
         [Description("Allow dealing damage to other players, while in lobby:")]
-        public bool AlowDamage { get; set; } = false;
+        public bool AllowDamage { get; set; } = false;
 
         [Description("Disallow players triggering SCP-096 and stopping from moving SCP-173, while in lobby:")]
         public bool TurnedPlayers { get; set; } = true;

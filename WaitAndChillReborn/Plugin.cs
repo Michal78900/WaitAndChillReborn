@@ -16,11 +16,10 @@ namespace WaitAndChillReborn
     {
         public static WaitAndChillReborn Singleton;
 
-        public override PluginPriority Priority => PluginPriority.Medium;
 
         public override string Author => "Michal78900";
-        public override Version Version => new Version(2, 1, 1);
-        public override Version RequiredExiledVersion => new Version(2, 1, 32);
+        public override Version Version => new Version(2, 2, 0);
+        public override Version RequiredExiledVersion => new Version(2, 3, 3);
 
         private Handler handler;
 
@@ -28,8 +27,6 @@ namespace WaitAndChillReborn
 
         public override void OnEnabled()
         {
-            base.OnEnabled();
-
             Singleton = this;
 
             handler = new Handler(this);
@@ -62,12 +59,12 @@ namespace WaitAndChillReborn
             {
                 Log.Debug($"Subclass plugin is not installed", Config.ShowDebugMessages);
             }
+
+            base.OnEnabled();
         }
 
         public override void OnDisabled()
         {
-            base.OnDisabled();
-
             ServerEvent.WaitingForPlayers -= handler.OnWatingForPlayers;
 
             MapEvent.PlacingBlood -= handler.OnPlacingBlood;
@@ -84,6 +81,9 @@ namespace WaitAndChillReborn
             ServerEvent.RoundStarted -= handler.OnRoundStarted;
 
             handler = null;
+            Singleton = null;
+
+            base.OnDisabled();
         }
     }
 }
