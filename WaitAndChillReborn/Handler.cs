@@ -51,8 +51,6 @@ namespace WaitAndChillReborn
 
         public void OnPlayerJoin(VerifiedEventArgs ev)
         {
-            var componentsVerified = ev.Player.GameObject.GetComponents(typeof(Component));
-
             if (!Round.IsStarted && (GameCore.RoundStart.singleton.NetworkTimer > 1 || GameCore.RoundStart.singleton.NetworkTimer == -2))
             {
                 Timing.CallDelayed(0.1f, () =>
