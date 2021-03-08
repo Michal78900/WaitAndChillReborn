@@ -13,16 +13,18 @@ namespace WaitAndChillReborn
         [Description("Determines if any kind of message at all will be displayed")]
         public bool DisplayWaitMessage { get; set; } = true;
 
-        [Description("List of lobbys (rooms) where players can spawn: (TOWER(1-3), SHELTER, GR18, 079, 106, 173, 939, GATE_A, GATE_B)")]
+        [Description("List of lobbys (rooms) where players can spawn: (TOWER(1-4), NUKE_SURFACE, SHELTER, GR18, TOILET, 049, 079, 096, 106, 173, 939, GATE_A, GATE_B, INTERCOM)")]
         public List<string> LobbyRoom { get; set; } = new List<string>
         {
             "TOWER1",
             "TOWER2",
             "TOWER3",
+            "TOWER4",
             "GATE_A",
             "GATE_B",
             "SHELTER",
             "GR18",
+            "049",
             "079",
             "106",
             "173",
@@ -40,6 +42,9 @@ namespace WaitAndChillReborn
 
         [Description("Allow dealing damage to other players, while in lobby:")]
         public bool AllowDamage { get; set; } = false;
+
+        [Description("Allow using Intercom by players, while in lobby:")]
+        public bool AllowIntercom { get; set; } = true;
 
         [Description("Disallow players triggering SCP-096 and stopping from moving SCP-173, while in lobby:")]
         public bool TurnedPlayers { get; set; } = true;

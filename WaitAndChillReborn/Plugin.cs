@@ -18,7 +18,7 @@ namespace WaitAndChillReborn
 
 
         public override string Author => "Michal78900";
-        public override Version Version => new Version(2, 2, 0);
+        public override Version Version => new Version(2, 3, 0);
         public override Version RequiredExiledVersion => new Version(2, 3, 3);
 
         private Handler handler;
@@ -38,6 +38,7 @@ namespace WaitAndChillReborn
 
             PlayerEvent.Verified += handler.OnPlayerJoin;
             PlayerEvent.Hurting += handler.OnHurting;
+            PlayerEvent.IntercomSpeaking += handler.OnIntercom;
             PlayerEvent.PickingUpItem += handler.OnItemPickup;
             PlayerEvent.InteractingDoor += handler.OnDoor;
             PlayerEvent.InteractingElevator += handler.OnElevator;
@@ -71,6 +72,7 @@ namespace WaitAndChillReborn
 
             PlayerEvent.Verified -= handler.OnPlayerJoin;
             PlayerEvent.Hurting -= handler.OnHurting;
+            PlayerEvent.IntercomSpeaking -= handler.OnIntercom;
             PlayerEvent.PickingUpItem -= handler.OnItemPickup;
             PlayerEvent.InteractingDoor -= handler.OnDoor;
             PlayerEvent.InteractingElevator -= handler.OnElevator;

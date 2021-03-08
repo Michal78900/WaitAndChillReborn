@@ -9,11 +9,12 @@ using MEC;
 using UnityEngine;
 using Mirror;
 using Interactables.Interobjects.DoorUtils;
-
+using Exiled.API.Extensions;
+using UnityEngine.PostProcessing;
 
 namespace WaitAndChillReborn
 {
-    class Handler
+    public class Handler
     {
         private readonly WaitAndChillReborn plugin;
         public Handler(WaitAndChillReborn plugin) => this.plugin = plugin;
@@ -94,6 +95,14 @@ namespace WaitAndChillReborn
         public void OnPlacingBlood(PlacingBloodEventArgs ev)
         {
             if (IsLobby)
+            {
+                ev.IsAllowed = false;
+            }
+        }
+
+        public void OnIntercom(IntercomSpeakingEventArgs ev)
+        {
+            if (IsLobby && !plugin.Config.AllowIntercom)
             {
                 ev.IsAllowed = false;
             }
@@ -270,8 +279,14 @@ namespace WaitAndChillReborn
             if (plugin.Config.LobbyRoom.Contains("TOWER1")) PossibleSpawnsPos.Add(new Vector3(54.81f, 1019.41f, -44.906f));
             if (plugin.Config.LobbyRoom.Contains("TOWER2")) PossibleSpawnsPos.Add(new Vector3(148.6951f, 1019.447f, -19.06371f));
             if (plugin.Config.LobbyRoom.Contains("TOWER3")) PossibleSpawnsPos.Add(new Vector3(223.1443f, 1026.775f, -18.15129f));
+            if (plugin.Config.LobbyRoom.Contains("TOWER4")) PossibleSpawnsPos.Add(new Vector3(-21.81f, 1019.89f, -43.45f));
+            if (plugin.Config.LobbyRoom.Contains("NUKE_SURFACE")) PossibleSpawnsPos.Add(new Vector3(40.68f, 988.86f, -36.2f));
 
 
+            if (plugin.Config.LobbyRoom.Contains("TOILET"))
+            {
+                PossibleSpawnsPos.Add(RandomItemSpawner.singleton.posIds.First(x => x.posID == "toilet_keycard" && x.position.position.y > 1.25f && x.position.position.y < 1.35f).position.position);
+            }
 
             if (plugin.Config.LobbyRoom.Contains("GR18"))
             {
@@ -294,6 +309,13 @@ namespace WaitAndChillReborn
                 }
             }
 
+            if (plugin.Config.LobbyRoom.Contains("INTERCOM"))
+            {
+                var doorPos = Map.GetDoorByName("INTERCOM").transform.position;
+                var fixedDoorPos = new Vector3(doorPos.x, doorPos.y + 1.5f, doorPos.z);
+
+                PossibleSpawnsPos.Add(fixedDoorPos);
+            }
 
 
             if (plugin.Config.LobbyRoom.Contains("079"))
@@ -304,8 +326,14 @@ namespace WaitAndChillReborn
                 Scp079sDoors(true);
             }
 
+            if (plugin.Config.LobbyRoom.Contains("096"))
+            {
+                PossibleSpawnsPos.Add(RandomItemSpawner.singleton.posIds.First(x => x.posID == "Fireman" && x.DoorTriggerName == "096").position.position);
+            }
+
             Dictionary<string, RoleType> StringToRole = new Dictionary<string, RoleType>()
             {
+                {"049", RoleType.Scp049},
                 {"106", RoleType.Scp106},
                 {"173", RoleType.Scp173},
                 {"939", RoleType.Scp93953},
@@ -321,7 +349,6 @@ namespace WaitAndChillReborn
 
 
             PossibleSpawnsPos.ShuffleList();
-
             ChoosedSpawnPos = PossibleSpawnsPos[0];
         }
 

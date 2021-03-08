@@ -12,7 +12,7 @@ Remade version of this plugin: https://github.com/TruthfullyHonest/WaitAndChill
 - %player will return one of two options for messages ((0 or x players have connected) or (1 player has connected))
 - %seconds will return one of four options for messages (The server is paused, The round has started, 1 second remains, x seconds remain)
  
-# Config
+# Default config
 ```yml
 wait_and_chill_reborn:
   is_enabled: true
@@ -20,15 +20,17 @@ wait_and_chill_reborn:
   show_debug_messages: false
   # Determines if any kind of message at all will be displayed
   display_wait_message: true
-  # List of lobbys (rooms) where players can spawn: (TOWER(1-3), SHELTER, GR18, 079, 106, 173, 939, GATE_A, GATE_B)
+  # List of lobbys (rooms) where players can spawn: (TOWER(1-4), NUKE_SURFACE, SHELTER, GR18, TOILET, 049, 079, 096, 106, 173, 939, GATE_A, GATE_B, INTERCOM)
   lobby_room:
   - TOWER1
   - TOWER2
   - TOWER3
+  - TOWER4
   - GATE_A
   - GATE_B
   - SHELTER
   - GR18
+  - 049
   - 079
   - 106
   - 173
@@ -40,6 +42,8 @@ wait_and_chill_reborn:
   - Tutorial
   # Allow dealing damage to other players, while in lobby:
   allow_damage: false
+  # Allow using Intercom by players, while in lobby:
+  allow_intercom: true
   # Disallow players triggering SCP-096 and stopping from moving SCP-173, while in lobby:
   turned_players: true
   # Give players an effect of SCP-207, while in lobby: (set 0 to disable)
@@ -58,3 +62,22 @@ wait_and_chill_reborn:
   one_player_connected: player has connected
   x_players_connected: players have connected
 ```
+
+# List of all possible lobby rooms
+- TOWER1
+- TOWER2
+- TOWER3
+- TOWER4
+- NUKE_SURFACE
+- SHELTER
+- GR18
+- TOILET
+- 049
+- 079
+- 096
+- 106
+- 173
+- 939
+- GATE_A
+- GATE_B
+- INTERCOM
