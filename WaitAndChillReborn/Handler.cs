@@ -110,7 +110,8 @@ namespace WaitAndChillReborn
 
         public void OnHurting(HurtingEventArgs ev)
         {
-            if (IsLobby && ev.DamageType == DamageTypes.Scp207) ev.Amount = 0f;
+            if (IsLobby && ev.DamageType == DamageTypes.Scp207)
+                ev.IsAllowed = false;
         }
 
         public void OnItemPickup(PickingUpItemEventArgs ev)
@@ -242,8 +243,10 @@ namespace WaitAndChillReborn
 
                 foreach (Player ply in Player.List)
                 {
-                    if (plugin.Config.UseHints) ply.ShowHint(message.ToString(), 1f);
-                    else ply.Broadcast(1, message.ToString());
+                    if (plugin.Config.UseHints)
+                        ply.ShowHint(message.ToString(), 1f);
+                    else
+                        ply.Broadcast(1, message.ToString());
                 }
 
                 yield return Timing.WaitForSeconds(1f);
