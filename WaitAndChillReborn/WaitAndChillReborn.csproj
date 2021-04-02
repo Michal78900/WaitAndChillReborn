@@ -84,6 +84,7 @@
   <ItemGroup>
     <Compile Include="Config.cs" />
     <Compile Include="Handler.cs" />
+    <Compile Include="Methods.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

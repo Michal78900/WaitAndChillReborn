@@ -1,25 +1,23 @@
-﻿using System;
-using System.Linq;
-using Exiled.API.Enums;
-using Exiled.API.Features;
-using Exiled.Loader;
-using System.Reflection;
-
-using PlayerEvent = Exiled.Events.Handlers.Player;
-using ServerEvent = Exiled.Events.Handlers.Server;
-using MapEvent = Exiled.Events.Handlers.Map;
-using Scp106Event = Exiled.Events.Handlers.Scp106;
-
-namespace WaitAndChillReborn
+﻿namespace WaitAndChillReborn
 {
+    using System;
+    using System.Linq;
+    using Exiled.API.Features;
+    using Exiled.Loader;
+    using System.Reflection;
+
+    using PlayerEvent = Exiled.Events.Handlers.Player;
+    using ServerEvent = Exiled.Events.Handlers.Server;
+    using MapEvent = Exiled.Events.Handlers.Map;
+    using Scp106Event = Exiled.Events.Handlers.Scp106;
+
     public class WaitAndChillReborn : Plugin<Config>
     {
         public static WaitAndChillReborn Singleton;
 
-
         public override string Author => "Michal78900";
-        public override Version Version => new Version(2, 3, 0);
-        public override Version RequiredExiledVersion => new Version(2, 3, 3);
+        public override Version Version => new Version(2, 5, 0);
+        public override Version RequiredExiledVersion => new Version(2, 8, 0);
 
         private Handler handler;
 
@@ -28,15 +26,13 @@ namespace WaitAndChillReborn
         public override void OnEnabled()
         {
             Singleton = this;
-
             handler = new Handler(this);
-
 
             ServerEvent.WaitingForPlayers += handler.OnWatingForPlayers;
 
             MapEvent.PlacingBlood += handler.OnPlacingBlood;
 
-            PlayerEvent.Verified += handler.OnPlayerJoin;
+            PlayerEvent.Verified += handler.OnVerified;
             PlayerEvent.Hurting += handler.OnHurting;
             PlayerEvent.IntercomSpeaking += handler.OnIntercom;
             PlayerEvent.PickingUpItem += handler.OnItemPickup;
@@ -70,7 +66,7 @@ namespace WaitAndChillReborn
 
             MapEvent.PlacingBlood -= handler.OnPlacingBlood;
 
-            PlayerEvent.Verified -= handler.OnPlayerJoin;
+            PlayerEvent.Verified -= handler.OnVerified;
             PlayerEvent.Hurting -= handler.OnHurting;
             PlayerEvent.IntercomSpeaking -= handler.OnIntercom;
             PlayerEvent.PickingUpItem -= handler.OnItemPickup;
