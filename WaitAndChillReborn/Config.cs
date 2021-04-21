@@ -6,20 +6,23 @@ namespace WaitAndChillReborn
 {
     public class Config : IConfig
     {
+        [Description("Is the plugin enabled.")]
         public bool IsEnabled { get; set; } = true;
-        [Description("Should debug messages be shown in a server console?")]
-        public bool ShowDebugMessages { get; set; } = false;
 
-        [Description("Determines if any kind of message at all will be displayed")]
+        [Description("Should debug messages be shown in a server console.")]
+        public bool Debug { get; set; } = false;
+
+        [Description("Determines if any kind of message at all will be display.")]
         public bool DisplayWaitMessage { get; set; } = true;
 
-        [Description("List of lobbys (rooms) where players can spawn: (TOWER(1-4), NUKE_SURFACE, SHELTER, GR18, TOILET, 049, 079, 096, 106, 173, 939, GATE_A, GATE_B, INTERCOM)")]
+        [Description("List of lobbys (rooms) where players can spawn: (TOWER(1-4), PARKOUR, NUKE_SURFACE, SHELTER, GR18, TOILET, 049, 079, 096, 106, 173, 939, GATE_A, GATE_B, INTERCOM)")]
         public List<string> LobbyRoom { get; set; } = new List<string>
         {
             "TOWER1",
             "TOWER2",
             "TOWER3",
             "TOWER4",
+            "PARKOUR",
             "GATE_A",
             "GATE_B",
             "SHELTER",
@@ -52,20 +55,13 @@ namespace WaitAndChillReborn
         [Description("Give players an effect of SCP-207, while in lobby: (set 0 to disable)")]
         public byte ColaMultiplier { get; set; } = 4;
 
-        [Description("Use hints instead of broadcasts for text stuff:")]
+        [Description("Use hints instead of broadcasts for text stuff: (broadcasts are not recommended)")]
         public bool UseHints { get; set; } = true;
 
         [Description("Determines the position of the Hint on the users screen (32 = Top, 0 = Middle, -15 = Below)")]
         public int HintVertPos { get; set; } = 25;
 
         [Description("Text traslations:")]
-        public string TopMessage { get; set; } = "<size=40><color=yellow><b>The game will be starting soon, %seconds</b></color></size>";
-        public string BottomMessage { get; set; } = "<size=30><i>%players</i></size>";
-        public string ServerIsPaused { get; set; } = "Server is paused";
-        public string RoundIsBeingStarted { get; set; } = "Round is being started";
-        public string OneSecondRemain { get; set; } = "second remain";
-        public string XSecondsRemains { get; set; } = "seconds remains";
-        public string OnePlayerConnected { get; set; } = "player has connected";
-        public string XPlayersConnected { get; set; } = "players have connected";
+        public Translations Translations { get; set; } = new Translations();
     }
 }

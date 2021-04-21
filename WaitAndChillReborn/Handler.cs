@@ -5,26 +5,25 @@
     using System.Collections.Generic;
     using MEC;
     using UnityEngine;
-    using System.Text;
-    using Exiled.API.Enums;
     using CustomPlayerEffects;
+    using Mirror;
+    using System.Linq;
 
     public partial class Handler
     {
-        private readonly WaitAndChillReborn plugin;
-        public Handler(WaitAndChillReborn plugin) => this.plugin = plugin;
+        private readonly Config Config = WaitAndChillReborn.Singleton.Config;
 
-        System.Random rng = new System.Random();
+        private readonly System.Random rng = new System.Random();
 
-        string text;
+        private string text;
 
-        List<Vector3> PossibleSpawnsPos = new List<Vector3>();
+        private List<Vector3> PossibleSpawnsPos = new List<Vector3>();
 
-        Vector3 ChoosedSpawnPos;
+        private Vector3 ChoosedSpawnPos;
 
-        CoroutineHandle lobbyTimer;
+        private CoroutineHandle lobbyTimer;
 
-        internal void OnWatingForPlayers()
+        internal void OnWaitingForPlayers()
         {
             SpawnManager();
 
@@ -40,7 +39,7 @@
                 Timing.KillCoroutines(lobbyTimer);
             }
 
-            if (plugin.Config.DisplayWaitMessage)
+            if (Config.DisplayWaitMessage)
                 lobbyTimer = Timing.RunCoroutine(LobbyTimer());
         }
 
@@ -50,14 +49,14 @@
             {
                 Timing.CallDelayed(0.1f, () =>
                 {
-                    ev.Player.Role = plugin.Config.RolesToChoose[rng.Next(plugin.Config.RolesToChoose.Count)];
+                    ev.Player.Role = Config.RolesToChoose[rng.Next(Config.RolesToChoose.Count)];
 
-                    if (!plugin.Config.AllowDamage)
+                    if (!Config.AllowDamage)
                     {
                         ev.Player.IsGodModeEnabled = true;
                     }
 
-                    if (plugin.Config.TurnedPlayers)
+                    if (Config.TurnedPlayers)
                     {
                         Scp096.TurnedPlayers.Add(ev.Player);
                         Scp173.TurnedPlayers.Add(ev.Player);
@@ -66,31 +65,25 @@
 
                 Timing.CallDelayed(0.5f, () =>
                 {
-                    if (!plugin.Config.MultipleRooms)
+                    if (!Config.MultipleRooms)
                     {
                         ev.Player.Position = ChoosedSpawnPos;
                     }
-
                     else
                     {
                         ev.Player.Position = PossibleSpawnsPos[rng.Next(PossibleSpawnsPos.Count)];
                     }
 
-                    if (plugin.Config.ColaMultiplier != 0)
+                    if (Config.ColaMultiplier != 0)
                     {
-                        //ev.Player.ReferenceHub.playerEffectsController.EnableEffect<CustomPlayerEffects.Scp207>(999f, false);
-                        //ev.Player.ReferenceHub.playerEffectsController.ChangeEffectIntensity<CustomPlayerEffects.Scp207>(plugin.Config.ColaMultiplier);
-
                         ev.Player.EnableEffect<Scp207>();
-                        ev.Player.ChangeEffectIntensity<Scp207>(plugin.Config.ColaMultiplier);
+                        ev.Player.ChangeEffectIntensity<Scp207>(Config.ColaMultiplier);
                     }
                 });
-
             }
         }
 
-
-        bool IsLobby => !Round.IsStarted && !RoundSummary.singleton._roundEnded;
+        public static bool IsLobby => !Round.IsStarted && !RoundSummary.singleton._roundEnded;
 
         internal void OnPlacingBlood(PlacingBloodEventArgs ev)
         {
@@ -102,7 +95,7 @@
 
         internal void OnIntercom(IntercomSpeakingEventArgs ev)
         {
-            if (IsLobby && !plugin.Config.AllowIntercom)
+            if (IsLobby && !Config.AllowIntercom)
             {
                 ev.IsAllowed = false;
             }
@@ -156,33 +149,50 @@
             }
         }
 
+        internal void OnSendingRemoteAdminCommand(SendingRemoteAdminCommandEventArgs ev)
+        {
+            if (IsLobby && ev.Name == "destroy" && ev.Arguments[0] == "**")
+            {
+                ev.IsAllowed = false;
+                ev.Success = false;
+
+                ev.ReplyMessage = "You can't destroy all doors, while parkour is present because it may crash your server and give people an earrape!";
+            }
+        }
+
         internal void OnRoundStarted()
         {
+            Intercom.host.CustomContent = string.Empty;
+            Intercom.host.Network_state = Intercom.State.Ready;
+
             SubClassHandler(true);
 
             Timing.CallDelayed(0.25f, () =>
             {
-                if (!plugin.Config.AllowDamage)
+                foreach (Player ply in Player.List)
                 {
-                    foreach (Player ply in Player.List)
+                    if (!Config.AllowDamage)
                     {
                         ply.IsGodModeEnabled = false;
                     }
+
+                    if (Config.ColaMultiplier != 0)
+                    {
+                        ply.DisableEffect<Scp207>();
+                    }
                 }
 
-                if (plugin.Config.TurnedPlayers)
+                if (Config.TurnedPlayers)
                 {
                     Scp096.TurnedPlayers.Clear();
                     Scp173.TurnedPlayers.Clear();
                 }
 
-                if (plugin.Config.ColaMultiplier != 0)
+                foreach (var door in spawnedDoors)
                 {
-                    foreach (Player ply in Player.List)
-                    {
-                        ply.DisableEffect<CustomPlayerEffects.Scp207>();
-                    }
+                    NetworkServer.Destroy(door.gameObject);
                 }
+                spawnedDoors.Clear();
 
                 Scp079sDoors(false);
 
