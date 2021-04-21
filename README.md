@@ -12,20 +12,22 @@ Remade version of this plugin: https://github.com/TruthfullyHonest/WaitAndChill
 - %player will return one of two options for messages ((0 or x players have connected) or (1 player has connected))
 - %seconds will return one of four options for messages (The server is paused, The round has started, 1 second remains, x seconds remain)
  
-# Default config
+# Config
 ```yml
 wait_and_chill_reborn:
+# Is the plugin enabled.
   is_enabled: true
-  # Should debug messages be shown in a server console?
-  show_debug_messages: false
-  # Determines if any kind of message at all will be displayed
+  # Should debug messages be shown in a server console.
+  debug: false
+  # Determines if any kind of message at all will be display.
   display_wait_message: true
-  # List of lobbys (rooms) where players can spawn: (TOWER(1-4), NUKE_SURFACE, SHELTER, GR18, TOILET, 049, 079, 096, 106, 173, 939, GATE_A, GATE_B, INTERCOM)
+  # List of lobbys (rooms) where players can spawn: (TOWER(1-4), PARKOUR, NUKE_SURFACE, SHELTER, GR18, TOILET, 049, 079, 096, 106, 173, 939, GATE_A, GATE_B, INTERCOM)
   lobby_room:
   - TOWER1
   - TOWER2
   - TOWER3
   - TOWER4
+  - PARKOUR
   - GATE_A
   - GATE_B
   - SHELTER
@@ -48,19 +50,27 @@ wait_and_chill_reborn:
   turned_players: true
   # Give players an effect of SCP-207, while in lobby: (set 0 to disable)
   cola_multiplier: 4
-  # Use hints instead of broadcasts for text stuff:
+  # Use hints instead of broadcasts for text stuff: (broadcasts are not recommended)
   use_hints: true
   # Determines the position of the Hint on the users screen (32 = Top, 0 = Middle, -15 = Below)
   hint_vert_pos: 25
-  # Text traslations:
-  top_message: <size=40><color=yellow><b>The game will be starting soon, %seconds</b></color></size>
-  bottom_message: <size=30><i>%players</i></size>
-  server_is_paused: Server is paused
-  round_is_being_started: Round is being started
-  one_second_remain: second remain
-  x_seconds_remains: seconds remains
-  one_player_connected: player has connected
-  x_players_connected: players have connected
+```
+#Translations
+```yml
+  translations:
+    top_message: <size=40><color=yellow><b>The game will be starting soon, {seconds}</b></color></size>
+    bottom_message: <size=30><i>{players}</i></size>
+    server_is_paused: Server is paused
+    round_is_being_started: Round is being started
+    one_second_remain: second remain
+    x_seconds_remains: seconds remains
+    one_player_connected: player has connected
+    x_players_connected: players have connected
+    # Override the Intercom text, while in lobby: (leave empty to disable)
+    intercom: >-
+      <size=20>{servername}
+
+      {playercount}/{maxplayers}</size>
 ```
 
 # List of all possible lobby rooms
@@ -68,6 +78,7 @@ wait_and_chill_reborn:
 - TOWER2
 - TOWER3
 - TOWER4
+- PARKOUR
 - NUKE_SURFACE
 - SHELTER
 - GR18
