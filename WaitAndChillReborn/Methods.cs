@@ -198,7 +198,7 @@
         }
 
         byte doorType = 0;
-        internal void SpawnDoor(Vector3 position, Vector3 rotation)
+        internal void SpawnDoor(Vector3 position, Vector3 rotation, bool big = false)
         {
             // Original code by 初音早猫(sanyae2439)#0001
 
@@ -216,6 +216,9 @@
                 doorType = 0;
 
             var door = Object.Instantiate(prefab.TargetPrefab, position, Quaternion.Euler(rotation));
+
+            if (big)
+                door.transform.localScale = new Vector3(4f, 4f, 2.5f);
 
             spawnedDoors.Add(door.gameObject);
             NetworkServer.Spawn(door.gameObject);
@@ -281,6 +284,7 @@
 
             SpawnDoor(new Vector3(231f, 1029f, -20f), new Vector3(90f, 0f, 0f));
 
+            //Tower floor
             for (int x = 0; x < 6; x++)
             {
                 for (int z = 0; z < 4; z++)
@@ -289,6 +293,32 @@
                     SpawnDoor(new Vector3(228f - x * 2f, 1029.5f, -25f + z * 3.4f), new Vector3(90f, 0f, 0f));
                 }
             }
+
+            // Tower wall
+            for (int z = 0; z < 7; z++)
+            {
+                doorType = 2;
+                SpawnDoor(new Vector3(217f, 1029f, -24 + z * 2f), new Vector3(0f, 90f, 0f));
+            }
+
+            // Tower wall
+            for (int x = 0; x < 6; x++)
+            {
+                doorType = 2;
+                SpawnDoor(new Vector3(228f - x * 2f, 1029f, -25f), new Vector3(0f, 0f, 0f));
+            }
+
+            // Tower wall
+            for (int x = 0; x < 6; x++)
+            {
+                doorType = 2;
+                SpawnDoor(new Vector3(228f - x * 2f, 1029f, -12f), new Vector3(0f, 0f, 0f));
+            }
+
+            doorType = 1;
+            SpawnDoor(new Vector3(233f, 1020f, -12f), new Vector3(0f, 0f, 0f), true);
+            doorType = 1;
+            SpawnDoor(new Vector3(233f, 1020f, -25f), new Vector3(0f, 0f, 0f), true);
 
             byte[,] slArray = {
                 { 0,0,0,0,0,0,0,0,0,0,0,0,0 },
