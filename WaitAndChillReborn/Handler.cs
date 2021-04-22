@@ -151,7 +151,7 @@
 
         internal void OnSendingRemoteAdminCommand(SendingRemoteAdminCommandEventArgs ev)
         {
-            if (IsLobby && ev.Name == "destroy" && ev.Arguments[0] == "**")
+            if (spawnedDoors.Count > 0 && ev.Name == "destroy" && ev.Arguments[0] == "**")
             {
                 ev.IsAllowed = false;
                 ev.Success = false;
@@ -162,9 +162,6 @@
 
         internal void OnRoundStarted()
         {
-            Intercom.host.CustomContent = string.Empty;
-            Intercom.host.Network_state = Intercom.State.Ready;
-
             SubClassHandler(true);
 
             Timing.CallDelayed(0.25f, () =>
