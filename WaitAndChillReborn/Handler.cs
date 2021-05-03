@@ -47,7 +47,7 @@
         {
             if (IsLobby && (GameCore.RoundStart.singleton.NetworkTimer > 1 || GameCore.RoundStart.singleton.NetworkTimer == -2))
             {
-                Timing.CallDelayed(0.1f, () =>
+                Timing.CallDelayed(Config.SpawnDelay, () =>
                 {
                     ev.Player.Role = Config.RolesToChoose[rng.Next(Config.RolesToChoose.Count)];
 
@@ -63,7 +63,7 @@
                     }
                 });
 
-                Timing.CallDelayed(0.5f, () =>
+                Timing.CallDelayed(Config.SpawnDelay * 2, () =>
                 {
                     if (!Config.MultipleRooms)
                     {
@@ -95,7 +95,7 @@
 
         internal void OnIntercom(IntercomSpeakingEventArgs ev)
         {
-            if (IsLobby && !Config.AllowIntercom)
+            if ((IsLobby || Round.ElapsedTime.TotalSeconds <= 1) && !Config.AllowIntercom)
             {
                 ev.IsAllowed = false;
             }
@@ -146,17 +146,6 @@
             if (IsLobby)
             {
                 ev.IsAllowed = false;
-            }
-        }
-
-        internal void OnSendingRemoteAdminCommand(SendingRemoteAdminCommandEventArgs ev)
-        {
-            if (spawnedDoors.Count > 0 && ev.Name == "destroy" && ev.Arguments[0] == "**")
-            {
-                ev.IsAllowed = false;
-                ev.Success = false;
-
-                ev.ReplyMessage = "You can't destroy all doors, while parkour is present because it may crash your server and give people an earrape!";
             }
         }
 

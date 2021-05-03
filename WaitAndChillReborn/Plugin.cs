@@ -17,7 +17,7 @@
         public static WaitAndChillReborn Singleton;
 
         public override string Author => "Michal78900";
-        public override Version Version => new Version(2, 4, 0);
+        public override Version Version => new Version(2, 4, 1);
         public override Version RequiredExiledVersion => new Version(2, 10, 0);
 
         private Handler handler;
@@ -48,7 +48,6 @@
             Scp106Event.Teleporting += handler.OnTeleporting;
 
             ServerEvent.RoundStarted += handler.OnRoundStarted;
-            ServerEvent.SendingRemoteAdminCommand += handler.OnSendingRemoteAdminCommand;
 
 
             Log.Debug($"Checking for Subclassing...", Config.Debug);
@@ -83,7 +82,6 @@
             Scp106Event.Teleporting -= handler.OnTeleporting;
 
             ServerEvent.RoundStarted -= handler.OnRoundStarted;
-            ServerEvent.SendingRemoteAdminCommand -= handler.OnSendingRemoteAdminCommand;
 
             handler = null;
             Singleton = null;

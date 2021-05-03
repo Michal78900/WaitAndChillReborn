@@ -3,6 +3,7 @@
     using Exiled.API.Enums;
     using Exiled.API.Extensions;
     using Exiled.API.Features;
+    using Interactables.Interobjects;
     using Interactables.Interobjects.DoorUtils;
     using MEC;
     using Mirror;
@@ -198,7 +199,7 @@
         }
 
         byte doorType = 0;
-        internal void SpawnDoor(Vector3 position, Vector3 rotation, bool big = false)
+        internal void SpawnDoor(Vector3 position, Vector3 rotation, Vector3? scale = null)
         {
             // Original code by 初音早猫(sanyae2439)#0001
 
@@ -217,8 +218,11 @@
 
             var door = Object.Instantiate(prefab.TargetPrefab, position, Quaternion.Euler(rotation));
 
-            if (big)
-                door.transform.localScale = new Vector3(4f, 4f, 2.5f);
+            (door as BreakableDoor)._ignoredDamageSources |= DoorDamageType.Grenade;
+            (door as BreakableDoor)._ignoredDamageSources |= DoorDamageType.ServerCommand;
+
+            if (scale != null)
+                door.transform.localScale = (Vector3)scale;
 
             spawnedDoors.Add(door.gameObject);
             NetworkServer.Spawn(door.gameObject);
@@ -316,9 +320,9 @@
             }
 
             doorType = 1;
-            SpawnDoor(new Vector3(233f, 1020f, -12f), new Vector3(0f, 0f, 0f), true);
+            SpawnDoor(new Vector3(233f, 1020f, -12f), new Vector3(0f, 0f, 0f), new Vector3(4f, 4f, 2.5f));
             doorType = 1;
-            SpawnDoor(new Vector3(233f, 1020f, -25f), new Vector3(0f, 0f, 0f), true);
+            SpawnDoor(new Vector3(233f, 1020f, -25f), new Vector3(0f, 0f, 0f), new Vector3(4f, 4f, 2.5f));
 
             byte[,] slArray = {
                 { 0,0,0,0,0,0,0,0,0,0,0,0,0 },

@@ -23,12 +23,29 @@
     [HarmonyPatch(typeof(Intercom), nameof(Intercom.Update))]
     public static class IntercomUpdatePatch
     {
+        private readonly static Config Config = WaitAndChillReborn.Singleton.Config;
+
         public static bool Prefix(Intercom __instance)
         {
             if (Handler.IsLobby && !string.IsNullOrEmpty(WaitAndChillReborn.Singleton.Config.Translations.Intercom))
             {
                 string intercomText = WaitAndChillReborn.Singleton.Config.Translations.Intercom;
                 intercomText = intercomText.Replace("{servername}", Server.Name).Replace("{playercount}", Player.List.Count().ToString()).Replace("{maxplayers}", CustomNetworkManager.slots.ToString());
+
+                short NetworkTimer = GameCore.RoundStart.singleton.NetworkTimer;
+
+                switch (NetworkTimer)
+                {
+                    case -2: intercomText = intercomText.Replace("{seconds}", Config.Translations.ServerIsPaused); break;
+
+                    case -1: intercomText = intercomText.Replace("{seconds}", Config.Translations.RoundIsBeingStarted); break;
+
+                    case 1: intercomText = intercomText.Replace("{seconds}", $"{NetworkTimer} {Config.Translations.OneSecondRemain}"); break;
+
+                    case 0: intercomText = intercomText.Replace("{seconds}", Config.Translations.RoundIsBeingStarted); break;
+
+                    default: intercomText = intercomText.Replace("{seconds}", $"{NetworkTimer} {Config.Translations.XSecondsRemains}"); break;
+                }
 
                 __instance.CustomContent = intercomText;
                 __instance.UpdateText();

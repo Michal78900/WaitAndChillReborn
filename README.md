@@ -70,6 +70,8 @@ wait_and_chill_reborn:
     intercom: >-
       <size=20>{servername}
 
+      <size=10>{seconds}</size>
+
       {playercount}/{maxplayers}</size>
 ```
 
