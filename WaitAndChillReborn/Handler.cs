@@ -152,41 +152,38 @@
         internal void OnRoundStarted()
         {
             SubClassHandler(true);
-
-            Timing.CallDelayed(0.25f, () =>
+            
+            foreach (Player ply in Player.List)
             {
-                foreach (Player ply in Player.List)
+                if (!Config.AllowDamage)
                 {
-                    if (!Config.AllowDamage)
-                    {
-                        ply.IsGodModeEnabled = false;
-                    }
-
-                    if (Config.ColaMultiplier != 0)
-                    {
-                        ply.DisableEffect<Scp207>();
-                    }
+                    ply.IsGodModeEnabled = false;
                 }
 
-                if (Config.TurnedPlayers)
+                if (Config.ColaMultiplier != 0)
                 {
-                    Scp096.TurnedPlayers.Clear();
-                    Scp173.TurnedPlayers.Clear();
+                    ply.DisableEffect<Scp207>();
                 }
+            }
 
-                foreach (var door in spawnedDoors)
-                {
-                    NetworkServer.Destroy(door.gameObject);
-                }
-                spawnedDoors.Clear();
+            if (Config.TurnedPlayers)
+            {
+                Scp096.TurnedPlayers.Clear();
+                Scp173.TurnedPlayers.Clear();
+            }
 
-                Scp079sDoors(false);
+            foreach (var door in spawnedDoors)
+            {
+                NetworkServer.Destroy(door.gameObject);
+            }
+            spawnedDoors.Clear();
 
-                if (lobbyTimer.IsRunning)
-                {
-                    Timing.KillCoroutines(lobbyTimer);
-                }
-            });
+            Scp079sDoors(false);
+
+            if (lobbyTimer.IsRunning)
+            {
+                Timing.KillCoroutines(lobbyTimer);
+            }
         }
     }
 }
