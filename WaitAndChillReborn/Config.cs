@@ -1,22 +1,19 @@
-﻿using Exiled.API.Interfaces;
-using System.Collections.Generic;
-using System.ComponentModel;
-
-namespace WaitAndChillReborn
+﻿namespace WaitAndChillReborn
 {
+    using Exiled.API.Interfaces;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+
     public class Config : IConfig
     {
         [Description("Is the plugin enabled.")]
         public bool IsEnabled { get; set; } = true;
 
-        [Description("Should debug messages be shown in a server console.")]
-        public bool Debug { get; set; } = false;
+        [Description("Determines if any kind of message at all will be displayed.")]
+        public bool DisplayWaitMessage { get; private set; } = true;
 
-        [Description("Determines if any kind of message at all will be display.")]
-        public bool DisplayWaitMessage { get; set; } = true;
-
-        [Description("List of lobbys (rooms) where players can spawn: (TOWER(1-4), PARKOUR, NUKE_SURFACE, SHELTER, GR18, TOILET, 049, 079, 096, 106, 173, 939, GATE_A, GATE_B, INTERCOM)")]
-        public List<string> LobbyRoom { get; set; } = new List<string>
+        [Description("List of lobbys (rooms) where players can spawn: (list of all possible rooms can be found on plugin's GitHub)")]
+        public List<string> LobbyRoom { get; private set; } = new List<string>()
         {
             "TOWER1",
             "TOWER2",
@@ -35,36 +32,42 @@ namespace WaitAndChillReborn
         };
 
         [Description("Instead of choosing one lobby room, should plugin use all of lobby rooms on the list? Player when they join will be teleported to the random lobby room.")]
-        public bool MultipleRooms { get; set; } = false;
+        public bool MultipleRooms { get; private set; } = false;
 
         [Description("The time (in seconds) between player joining on the server and him changing role while in lobby (change this number if some players aren't spawned / are spawned as a None class.")]
-        public float SpawnDelay { get; set; } = 0.25f;
+        public float SpawnDelay { get; private set; } = 0.25f;
 
-        [Description("List of roles that players can spawn:")]
-        public List<RoleType> RolesToChoose { get; set; } = new List<RoleType>
+        [Description("List of roles which players can spawn as:")]
+        public List<RoleType> RolesToChoose { get; private set; } = new List<RoleType>()
         {
             RoleType.Tutorial,
         };
 
-        [Description("Allow dealing damage to other players, while in lobby:")]
-        public bool AllowDamage { get; set; } = false;
+        [Description("List of items given to a player while in lobby: (supports CustomItems)")]
+        public List<string> Inventory { get; private set; } = new List<string>()
+        {
+            "Coin",
+        };
 
-        [Description("Allow using Intercom by players, while in lobby:")]
-        public bool AllowIntercom { get; set; } = true;
+        [Description("Allow dealing damage to other players, while in lobby.")]
+        public bool AllowDamage { get; private set; } = false;
 
-        [Description("Disallow players triggering SCP-096 and stopping from moving SCP-173, while in lobby:")]
-        public bool TurnedPlayers { get; set; } = true;
+        [Description("Allow friendly fire, while in lobby.")]
+        public bool AllowFriendlyFire { get; private set; } = true;
 
-        [Description("Give players an effect of SCP-207, while in lobby: (set 0 to disable)")]
-        public byte ColaMultiplier { get; set; } = 4;
+        [Description("Allow using Intercom by players, while in lobby.")]
+        public bool AllowIntercom { get; private set; } = true;
 
-        [Description("Use hints instead of broadcasts for text stuff: (broadcasts are not recommended)")]
-        public bool UseHints { get; set; } = true;
+        [Description("Disallow players triggering SCP-096 and stopping from moving SCP-173, while in lobby.")]
+        public bool TurnedPlayers { get; private set; } = true;
+
+        [Description("Give players an effect of SCP-207, while in lobby. (set 0 to disable)")]
+        public byte ColaMultiplier { get; private set; } = 4;
+
+        [Description("Use hints instead of broadcasts for text stuff. (broadcasts are not recommended)")]
+        public bool UseHints { get; private set; } = true;
 
         [Description("Determines the position of the Hint on the users screen (32 = Top, 0 = Middle, -15 = Below)")]
-        public int HintVertPos { get; set; } = 25;
-
-        [Description("Text traslations:")]
-        public Translations Translations { get; set; } = new Translations();
+        public int HintVertPos { get; private set; } = 25;
     }
 }

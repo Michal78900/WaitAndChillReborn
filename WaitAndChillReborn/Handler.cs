@@ -6,23 +6,13 @@
     using MEC;
     using UnityEngine;
     using CustomPlayerEffects;
+    using Exiled.API.Features.Items;
+    using Exiled.CustomItems.API;
     using Mirror;
-    using System.Linq;
+    using InventorySystem.Items.ThrowableProjectiles;
 
     public partial class Handler
     {
-        private readonly Config Config = WaitAndChillReborn.Singleton.Config;
-
-        private readonly System.Random rng = new System.Random();
-
-        private string text;
-
-        private List<Vector3> PossibleSpawnsPos = new List<Vector3>();
-
-        private Vector3 ChoosedSpawnPos;
-
-        private CoroutineHandle lobbyTimer;
-
         internal void OnWaitingForPlayers()
         {
             SpawnManager();
@@ -30,7 +20,8 @@
             Scp173.TurnedPlayers.Clear();
             Scp096.TurnedPlayers.Clear();
 
-            SubClassHandler(false);
+            ffPrevValue = Server.FriendlyFire;
+            Server.FriendlyFire = true;
 
             GameObject.Find("StartRound").transform.localScale = Vector3.zero;
 
@@ -41,6 +32,18 @@
 
             if (Config.DisplayWaitMessage)
                 lobbyTimer = Timing.RunCoroutine(LobbyTimer());
+
+            Timing.CallDelayed(1f, () =>
+            {
+                foreach (Pickup pickup in Map.Pickups)
+                {
+                    if (!pickup.Spawned)
+                    {
+                        NetworkServer.UnSpawn(pickup.Base.gameObject);
+                        unspawnedPickups.Add(pickup);
+                    }
+                }
+            });
         }
 
         internal void OnVerified(VerifiedEventArgs ev)
@@ -49,7 +52,7 @@
             {
                 Timing.CallDelayed(Config.SpawnDelay, () =>
                 {
-                    ev.Player.Role = Config.RolesToChoose[rng.Next(Config.RolesToChoose.Count)];
+                    ev.Player.Role = Config.RolesToChoose[Random.Range(0, Config.RolesToChoose.Count)];
 
                     if (!Config.AllowDamage)
                     {
@@ -63,7 +66,7 @@
                     }
                 });
 
-                Timing.CallDelayed(Config.SpawnDelay * 2, () =>
+                Timing.CallDelayed(Config.SpawnDelay * 2f, () =>
                 {
                     if (!Config.MultipleRooms)
                     {
@@ -71,7 +74,7 @@
                     }
                     else
                     {
-                        ev.Player.Position = PossibleSpawnsPos[rng.Next(PossibleSpawnsPos.Count)];
+                        ev.Player.Position = possibleSpawnPoses[Random.Range(0, possibleSpawnPoses.Count)];
                     }
 
                     if (Config.ColaMultiplier != 0)
@@ -79,11 +82,47 @@
                         ev.Player.EnableEffect<Scp207>();
                         ev.Player.ChangeEffectIntensity<Scp207>(Config.ColaMultiplier);
                     }
+
+                    ev.Player.ResetInventory(Config.Inventory);
                 });
             }
         }
 
-        public static bool IsLobby => !Round.IsStarted && !RoundSummary.singleton._roundEnded;
+        internal void OnDying(DyingEventArgs ev)
+        {
+            if (IsLobby)
+                ev.Target.ClearInventory();
+        }
+
+        internal void OnDied(DiedEventArgs ev)
+        {
+            if (IsLobby && (GameCore.RoundStart.singleton.NetworkTimer > 1 || GameCore.RoundStart.singleton.NetworkTimer == -2))
+            {
+                Timing.CallDelayed(Config.SpawnDelay, () => ev.Target.Role = Config.RolesToChoose[Random.Range(0, Config.RolesToChoose.Count)]);
+
+                Timing.CallDelayed(Config.SpawnDelay * 2.5f, () =>
+                {
+                    if (!Config.MultipleRooms)
+                    {
+                        ev.Target.Position = ChoosedSpawnPos;
+                    }
+                    else
+                    {
+                        ev.Target.Position = possibleSpawnPoses[Random.Range(0, possibleSpawnPoses.Count)];
+                    }
+
+                    if (Config.ColaMultiplier != 0)
+                    {
+                        ev.Target.EnableEffect<Scp207>();
+                        ev.Target.ChangeEffectIntensity<Scp207>(Config.ColaMultiplier);
+                    }
+
+                    ev.Target.ResetInventory(Config.Inventory);
+                });
+            }
+        }
+
+        #region Disallowing Events
 
         internal void OnPlacingBlood(PlacingBloodEventArgs ev)
         {
@@ -95,7 +134,7 @@
 
         internal void OnIntercom(IntercomSpeakingEventArgs ev)
         {
-            if ((IsLobby || Round.ElapsedTime.TotalSeconds <= 1) && !Config.AllowIntercom)
+            if ((IsLobby || Round.ElapsedTime.TotalSeconds <= 5) && !Config.AllowIntercom)
             {
                 ev.IsAllowed = false;
             }
@@ -109,7 +148,7 @@
             }
         }
 
-        internal void OnItemPickup(PickingUpItemEventArgs ev)
+        internal void OnSpawningRagdoll(SpawningRagdollEventArgs ev)
         {
             if (IsLobby)
             {
@@ -117,7 +156,7 @@
             }
         }
 
-        internal void OnDoor(InteractingDoorEventArgs ev)
+        internal void OnDroppingItem(DroppingItemEventArgs ev)
         {
             if (IsLobby)
             {
@@ -125,7 +164,31 @@
             }
         }
 
-        internal void OnElevator(InteractingElevatorEventArgs ev)
+        internal void OnPickingupItem(PickingUpItemEventArgs ev)
+        {
+            if (ev.Player.Role == RoleType.ClassD)
+            {
+                ev.IsAllowed = false;
+            }
+        }
+
+        internal void OnInteractingDoor(InteractingDoorEventArgs ev)
+        {
+            if (IsLobby)
+            {
+                ev.IsAllowed = false;
+            }
+        }
+
+        internal void OnInteractingElevator(InteractingElevatorEventArgs ev)
+        {
+            if (IsLobby)
+            {
+                ev.IsAllowed = false;
+            }
+        }
+
+        internal void OnInteractingLocker(InteractingLockerEventArgs ev)
         {
             if (IsLobby)
             {
@@ -149,20 +212,28 @@
             }
         }
 
+        #endregion
+
         internal void OnRoundStarted()
         {
-            SubClassHandler(true);
-            
-            foreach (Player ply in Player.List)
+            Server.FriendlyFire = ffPrevValue;
+
+            foreach (ThrownProjectile throwable in Object.FindObjectsOfType<ThrownProjectile>())
+            {
+                throwable.transform.position = Vector3.zero;
+                Timing.CallDelayed(1f, () => NetworkServer.Destroy(throwable?.gameObject));
+            }
+
+            foreach (Player player in Player.List)
             {
                 if (!Config.AllowDamage)
                 {
-                    ply.IsGodModeEnabled = false;
+                    player.IsGodModeEnabled = false;
                 }
 
                 if (Config.ColaMultiplier != 0)
                 {
-                    ply.DisableEffect<Scp207>();
+                    player.DisableEffect<Scp207>();
                 }
             }
 
@@ -172,18 +243,41 @@
                 Scp173.TurnedPlayers.Clear();
             }
 
-            foreach (var door in spawnedDoors)
-            {
-                NetworkServer.Destroy(door.gameObject);
-            }
-            spawnedDoors.Clear();
-
             Scp079sDoors(false);
+
+            Intercom.host.CustomContent = null;
 
             if (lobbyTimer.IsRunning)
             {
                 Timing.KillCoroutines(lobbyTimer);
             }
+
+            foreach (Pickup pickup in unspawnedPickups)
+            {
+                NetworkServer.Spawn(pickup.Base.gameObject);
+            }
+            unspawnedPickups.Clear();
         }
+
+        #region Variables
+
+        public static bool IsLobby => !Round.IsStarted && !RoundSummary.singleton.RoundEnded;
+
+        private bool ffPrevValue;
+
+        private string text;
+
+        private List<Vector3> possibleSpawnPoses = new List<Vector3>();
+
+        private Vector3 ChoosedSpawnPos;
+
+        private CoroutineHandle lobbyTimer;
+
+        private List<Pickup> unspawnedPickups = new List<Pickup>();
+
+        private static readonly Translation Translation = WaitAndChillReborn.Singleton.Translation;
+        private readonly Config Config = WaitAndChillReborn.Singleton.Config;
+
+        #endregion
     }
 }
