@@ -36,7 +36,6 @@
             PlayerEvent.SpawningRagdoll += handler.OnSpawningRagdoll;
             PlayerEvent.IntercomSpeaking += handler.OnIntercom;
             PlayerEvent.DroppingItem += handler.OnDroppingItem;
-            PlayerEvent.PickingUpItem += handler.OnPickingupItem;
             PlayerEvent.InteractingDoor += handler.OnInteractingDoor;
             PlayerEvent.InteractingElevator += handler.OnInteractingElevator;
             PlayerEvent.InteractingLocker += handler.OnInteractingLocker;
@@ -62,7 +61,6 @@
             PlayerEvent.SpawningRagdoll -= handler.OnSpawningRagdoll;
             PlayerEvent.IntercomSpeaking -= handler.OnIntercom;
             PlayerEvent.DroppingItem -= handler.OnDroppingItem;
-            PlayerEvent.PickingUpItem -= handler.OnPickingupItem;
             PlayerEvent.InteractingDoor -= handler.OnInteractingDoor;
             PlayerEvent.InteractingElevator -= handler.OnInteractingElevator;
             PlayerEvent.InteractingLocker -= handler.OnInteractingLocker;
@@ -80,7 +78,7 @@
 
         public override string Name => "WaitAndChillReborn";
         public override string Author => "Michal78900";
-        public override Version Version => new Version(3, 0, 0);
+        public override Version Version => new Version(3, 0, 1);
         public override Version RequiredExiledVersion => new Version(3, 0, 0);
     }
 }

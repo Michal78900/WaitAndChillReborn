@@ -20,8 +20,11 @@
             Scp173.TurnedPlayers.Clear();
             Scp096.TurnedPlayers.Clear();
 
-            ffPrevValue = Server.FriendlyFire;
-            Server.FriendlyFire = true;
+            if (Config.AllowFriendlyFire)
+            {
+                ffPrevValue = Server.FriendlyFire;
+                Server.FriendlyFire = true;
+            }
 
             GameObject.Find("StartRound").transform.localScale = Vector3.zero;
 
@@ -164,14 +167,6 @@
             }
         }
 
-        internal void OnPickingupItem(PickingUpItemEventArgs ev)
-        {
-            if (ev.Player.Role == RoleType.ClassD)
-            {
-                ev.IsAllowed = false;
-            }
-        }
-
         internal void OnInteractingDoor(InteractingDoorEventArgs ev)
         {
             if (IsLobby)
@@ -216,7 +211,8 @@
 
         internal void OnRoundStarted()
         {
-            Server.FriendlyFire = ffPrevValue;
+            if (Config.AllowFriendlyFire)
+                Server.FriendlyFire = ffPrevValue;
 
             foreach (ThrownProjectile throwable in Object.FindObjectsOfType<ThrownProjectile>())
             {
