@@ -187,7 +187,7 @@
 
             foreach (Door controlRoomDoor in Map.Doors.Where(d => Vector3.Distance(d.Base.transform.position, secondDoorPos) < 5f))
             {
-                controlRoomDoor.Open = state;
+                controlRoomDoor.IsOpen = state;
             }
         }
     }
