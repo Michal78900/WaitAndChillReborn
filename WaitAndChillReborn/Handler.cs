@@ -10,6 +10,7 @@
     using Exiled.CustomItems.API;
     using Mirror;
     using InventorySystem.Items.ThrowableProjectiles;
+    using Exiled.API.Extensions;
 
     public partial class Handler
     {
@@ -86,7 +87,15 @@
                         ev.Player.ChangeEffectIntensity<Scp207>(Config.ColaMultiplier);
                     }
 
-                    ev.Player.ResetInventory(Config.Inventory);
+                    Timing.CallDelayed(0.3f, () =>
+                    {
+                        ev.Player.ResetInventory(Config.Inventory);
+
+                        foreach (var ammo in Config.Ammo)
+                        {
+                            ev.Player.Ammo[ammo.Key.GetItemType()] = ammo.Value;
+                        }
+                    });
                 });
             }
         }
@@ -120,7 +129,15 @@
                         ev.Target.ChangeEffectIntensity<Scp207>(Config.ColaMultiplier);
                     }
 
-                    ev.Target.ResetInventory(Config.Inventory);
+                    Timing.CallDelayed(0.3f, () =>
+                    {
+                        ev.Target.ResetInventory(Config.Inventory);
+
+                        foreach (var ammo in Config.Ammo)
+                        {
+                            ev.Target.Ammo[ammo.Key.GetItemType()] = ammo.Value;
+                        }
+                    });
                 });
             }
         }

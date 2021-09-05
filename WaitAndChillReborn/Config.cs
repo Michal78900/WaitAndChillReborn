@@ -1,5 +1,6 @@
 ﻿namespace WaitAndChillReborn
 {
+    using Exiled.API.Enums;
     using Exiled.API.Interfaces;
     using System.Collections.Generic;
     using System.ComponentModel;
@@ -47,6 +48,16 @@
         public List<string> Inventory { get; private set; } = new List<string>()
         {
             "Coin",
+        };
+
+        [Description("List of ammo given to a player while in lobby:")]
+        public Dictionary<AmmoType, ushort> Ammo { get; private set; } = new Dictionary<AmmoType, ushort>()
+        {
+            { AmmoType.Nato556, 0 },
+            { AmmoType.Nato762, 0 },
+            { AmmoType.Nato9, 0 },
+            { AmmoType.Ammo12Gauge, 0 },
+            { AmmoType.Ammo44Cal, 0 },
         };
 
         [Description("Allow dealing damage to other players, while in lobby.")]
