@@ -74,7 +74,7 @@
                 {
                     if (!Config.MultipleRooms)
                     {
-                        ev.Player.Position = ChoosedSpawnPos;
+                        ev.Player.Position = choosedSpawnPos;
                     }
                     else
                     {
@@ -116,7 +116,7 @@
                 {
                     if (!Config.MultipleRooms)
                     {
-                        ev.Target.Position = ChoosedSpawnPos;
+                        ev.Target.Position = choosedSpawnPos;
                     }
                     else
                     {
@@ -233,6 +233,9 @@
 
             foreach (ThrownProjectile throwable in Object.FindObjectsOfType<ThrownProjectile>())
             {
+                if (throwable is Scp018Projectile scp018 && scp018.Rb.velocity.sqrMagnitude <= 1f)
+                    continue;
+
                 throwable.transform.position = Vector3.zero;
                 Timing.CallDelayed(1f, () => NetworkServer.Destroy(throwable?.gameObject));
             }
@@ -282,7 +285,7 @@
 
         private List<Vector3> possibleSpawnPoses = new List<Vector3>();
 
-        private Vector3 ChoosedSpawnPos;
+        private Vector3 choosedSpawnPos;
 
         private CoroutineHandle lobbyTimer;
 

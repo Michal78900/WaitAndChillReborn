@@ -178,7 +178,7 @@
                 }
             }
 
-            ChoosedSpawnPos = possibleSpawnPoses[Random.Range(0, possibleSpawnPoses.Count)];
+            choosedSpawnPos = possibleSpawnPoses[Random.Range(0, possibleSpawnPoses.Count)];
         }
 
         internal void Scp079sDoors(bool state)
