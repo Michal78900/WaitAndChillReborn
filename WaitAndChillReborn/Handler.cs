@@ -11,6 +11,8 @@
     using Mirror;
     using InventorySystem.Items.ThrowableProjectiles;
     using Exiled.API.Extensions;
+    using System.Linq;
+    using InventorySystem.Items.Pickups;
 
     public partial class Handler
     {
@@ -41,10 +43,25 @@
             {
                 foreach (Pickup pickup in Map.Pickups)
                 {
-                    if (!pickup.Spawned)
+                    try
                     {
-                        NetworkServer.UnSpawn(pickup.Base.gameObject);
-                        unspawnedPickups.Add(pickup);
+                        if (!pickup.Spawned)
+                        {
+                            if (pickup.Base.transform.parent != null && pickup.Base.transform.parent.name.Contains("CustomSchematic"))
+                                continue;
+
+                            //pickup.Locked = true;
+                            PickupSyncInfo info = pickup.Base.Info;
+                            info.Locked = true;
+                            pickup.Base.NetworkInfo = info;
+
+                            pickup.Base.GetComponent<Rigidbody>().isKinematic = true;
+                            unspawnedPickups.Add(pickup);
+                        }
+                    }
+                    catch (System.Exception)
+                    {
+                        continue;
                     }
                 }
             });
@@ -228,12 +245,15 @@
 
         internal void OnRoundStarted()
         {
+            foreach (Player player in Player.List)
+                player.Role = RoleType.Spectator;
+
             if (Config.AllowFriendlyFire)
                 Server.FriendlyFire = ffPrevValue;
 
             foreach (ThrownProjectile throwable in Object.FindObjectsOfType<ThrownProjectile>())
             {
-                if (throwable is Scp018Projectile scp018 && scp018.Rb.velocity.sqrMagnitude <= 1f)
+                if (throwable.Rb.velocity.sqrMagnitude <= 1f)
                     continue;
 
                 throwable.transform.position = Vector3.zero;
@@ -268,11 +288,24 @@
                 Timing.KillCoroutines(lobbyTimer);
             }
 
-            foreach (Pickup pickup in unspawnedPickups)
+            foreach (Pickup pickup in unspawnedPickups.ToList())
             {
-                NetworkServer.Spawn(pickup.Base.gameObject);
+                try
+                {
+                    //pickup.Locked = false;
+                    PickupSyncInfo info = pickup.Base.Info;
+                    info.Locked = false;
+                    pickup.Base.NetworkInfo = info;
+
+                    pickup.Base.GetComponent<Rigidbody>().isKinematic = false;
+                }
+                catch (System.Exception)
+                {
+                    continue;
+                }
+
+                unspawnedPickups.Clear();
             }
-            unspawnedPickups.Clear();
         }
 
         #region Variables
