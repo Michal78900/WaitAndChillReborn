@@ -23,12 +23,6 @@
             Scp173.TurnedPlayers.Clear();
             Scp096.TurnedPlayers.Clear();
 
-            if (Config.AllowFriendlyFire)
-            {
-                ffPrevValue = Server.FriendlyFire;
-                Server.FriendlyFire = true;
-            }
-
             GameObject.Find("StartRound").transform.localScale = Vector3.zero;
 
             if (lobbyTimer.IsRunning)
@@ -50,11 +44,7 @@
                             if (pickup.Base.transform.parent != null && pickup.Base.transform.parent.name.Contains("CustomSchematic"))
                                 continue;
 
-                            //pickup.Locked = true;
-                            PickupSyncInfo info = pickup.Base.Info;
-                            info.Locked = true;
-                            pickup.Base.NetworkInfo = info;
-
+                            pickup.Locked = true;
                             pickup.Base.GetComponent<Rigidbody>().isKinematic = true;
                             unspawnedPickups.Add(pickup);
                         }
@@ -201,6 +191,14 @@
             }
         }
 
+        internal void OnDroppingAmmo(DroppingAmmoEventArgs ev)
+        {
+            if (IsLobby)
+            {
+                ev.IsAllowed = false;
+            }
+        }
+
         internal void OnInteractingDoor(InteractingDoorEventArgs ev)
         {
             if (IsLobby)
@@ -241,6 +239,14 @@
             }
         }
 
+        internal void OnChangingIntoGrenade(ChangingIntoGrenadeEventArgs ev)
+        {
+            if (IsLobby)
+            {
+                ev.IsAllowed = false;
+            }
+        }
+
         #endregion
 
         internal void OnRoundStarted()
@@ -249,7 +255,9 @@
                 player.Role = RoleType.Spectator;
 
             if (Config.AllowFriendlyFire)
-                Server.FriendlyFire = ffPrevValue;
+            {
+                Server.FriendlyFire = ffPrevValue.Value;
+            }
 
             foreach (ThrownProjectile throwable in Object.FindObjectsOfType<ThrownProjectile>())
             {
@@ -292,11 +300,7 @@
             {
                 try
                 {
-                    //pickup.Locked = false;
-                    PickupSyncInfo info = pickup.Base.Info;
-                    info.Locked = false;
-                    pickup.Base.NetworkInfo = info;
-
+                    pickup.Locked = false;
                     pickup.Base.GetComponent<Rigidbody>().isKinematic = false;
                 }
                 catch (System.Exception)
@@ -312,7 +316,7 @@
 
         public static bool IsLobby => !Round.IsStarted && !RoundSummary.singleton.RoundEnded;
 
-        private bool ffPrevValue;
+        private bool? ffPrevValue = null;
 
         private string text;
 

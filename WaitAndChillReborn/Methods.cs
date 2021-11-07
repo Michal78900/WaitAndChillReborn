@@ -96,6 +96,22 @@
                     Intercom.host.CustomContent = intercomText;
                 }
 
+
+                if (ffPrevValue == null)
+                {
+                    ffPrevValue = Server.FriendlyFire;
+                }
+
+                if (Config.AllowFriendlyFire && !Server.FriendlyFire)
+                {
+                    Server.FriendlyFire = true;
+                }
+
+                if (Config.AllowFriendlyFire && Player.List.Count() == 0 && !ffPrevValue.Value)
+                {
+                    Server.FriendlyFire = false;
+                }
+
                 yield return Timing.WaitForSeconds(1f);
             }
         }

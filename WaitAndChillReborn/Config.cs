@@ -61,7 +61,7 @@
         };
 
         [Description("Allow dealing damage to other players, while in lobby.")]
-        public bool AllowDamage { get; private set; } = false;
+        public bool AllowDamage { get; private set; } = true;
 
         [Description("Allow friendly fire, while in lobby.")]
         public bool AllowFriendlyFire { get; private set; } = true;
