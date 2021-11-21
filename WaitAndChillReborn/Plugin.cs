@@ -82,7 +82,7 @@
 
         public override string Name => "WaitAndChillReborn";
         public override string Author => "Michal78900";
-        public override Version Version => new Version(3, 1, 1);
-        public override Version RequiredExiledVersion => new Version(3, 6, 2);
+        public override Version Version => new Version(3, 1, 2);
+        public override Version RequiredExiledVersion => new Version(3, 7, 2);
     }
 }

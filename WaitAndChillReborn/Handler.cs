@@ -41,7 +41,7 @@
                     {
                         if (!pickup.Spawned)
                         {
-                            if (pickup.Base.transform.parent != null && pickup.Base.transform.parent.name.Contains("CustomSchematic"))
+                            if (pickup.Base.name.Contains("CustomSchematic"))
                                 continue;
 
                             pickup.Locked = true;
@@ -252,7 +252,10 @@
         internal void OnRoundStarted()
         {
             foreach (Player player in Player.List)
+            {
+                player.ClearInventory();
                 player.Role = RoleType.Spectator;
+            }
 
             if (Config.AllowFriendlyFire)
             {
