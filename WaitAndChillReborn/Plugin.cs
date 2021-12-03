@@ -32,7 +32,6 @@
             PlayerEvent.Died += handler.OnDied;
 
             MapEvent.PlacingBlood += handler.OnPlacingBlood;
-            PlayerEvent.Hurting += handler.OnHurting;
             PlayerEvent.SpawningRagdoll += handler.OnSpawningRagdoll;
             PlayerEvent.IntercomSpeaking += handler.OnIntercom;
             PlayerEvent.DroppingItem += handler.OnDroppingItem;
@@ -59,7 +58,6 @@
             PlayerEvent.Died -= handler.OnDied;
 
             MapEvent.PlacingBlood -= handler.OnPlacingBlood;
-            PlayerEvent.Hurting -= handler.OnHurting;
             PlayerEvent.SpawningRagdoll -= handler.OnSpawningRagdoll;
             PlayerEvent.IntercomSpeaking -= handler.OnIntercom;
             PlayerEvent.DroppingItem -= handler.OnDroppingItem;
@@ -82,7 +80,7 @@
 
         public override string Name => "WaitAndChillReborn";
         public override string Author => "Michal78900";
-        public override Version Version => new Version(3, 1, 2);
-        public override Version RequiredExiledVersion => new Version(3, 7, 2);
+        public override Version Version => new Version(4, 0, 0);
+        public override Version RequiredExiledVersion => new Version(4, 1, 2);
     }
 }

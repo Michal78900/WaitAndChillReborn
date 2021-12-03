@@ -5,21 +5,18 @@
     using System.Collections.Generic;
     using MEC;
     using UnityEngine;
-    using CustomPlayerEffects;
     using Exiled.API.Features.Items;
     using Exiled.CustomItems.API;
     using Mirror;
     using InventorySystem.Items.ThrowableProjectiles;
     using Exiled.API.Extensions;
     using System.Linq;
-    using InventorySystem.Items.Pickups;
+    using CustomPlayerEffects;
 
     public partial class Handler
     {
         internal void OnWaitingForPlayers()
         {
-            SpawnManager();
-
             Scp173.TurnedPlayers.Clear();
             Scp096.TurnedPlayers.Clear();
 
@@ -32,6 +29,8 @@
 
             if (Config.DisplayWaitMessage)
                 lobbyTimer = Timing.RunCoroutine(LobbyTimer());
+
+            Timing.CallDelayed(0.1f, () => SpawnManager());
 
             Timing.CallDelayed(1f, () =>
             {
@@ -88,10 +87,10 @@
                         ev.Player.Position = possibleSpawnPoses[Random.Range(0, possibleSpawnPoses.Count)];
                     }
 
-                    if (Config.ColaMultiplier != 0)
+                    if (Config.MovementBoost != 0)
                     {
-                        ev.Player.EnableEffect<Scp207>();
-                        ev.Player.ChangeEffectIntensity<Scp207>(Config.ColaMultiplier);
+                        ev.Player.EnableEffect<MovementBoost>();
+                        ev.Player.ChangeEffectIntensity<MovementBoost>(50);
                     }
 
                     Timing.CallDelayed(0.3f, () =>
@@ -130,10 +129,10 @@
                         ev.Target.Position = possibleSpawnPoses[Random.Range(0, possibleSpawnPoses.Count)];
                     }
 
-                    if (Config.ColaMultiplier != 0)
+                    if (Config.MovementBoost != 0)
                     {
-                        ev.Target.EnableEffect<Scp207>();
-                        ev.Target.ChangeEffectIntensity<Scp207>(Config.ColaMultiplier);
+                        ev.Target.EnableEffect<MovementBoost>();
+                        ev.Target.ChangeEffectIntensity<MovementBoost>(50);
                     }
 
                     Timing.CallDelayed(0.3f, () =>
@@ -162,14 +161,6 @@
         internal void OnIntercom(IntercomSpeakingEventArgs ev)
         {
             if ((IsLobby || Round.ElapsedTime.TotalSeconds <= 5) && !Config.AllowIntercom)
-            {
-                ev.IsAllowed = false;
-            }
-        }
-
-        internal void OnHurting(HurtingEventArgs ev)
-        {
-            if (IsLobby && ev.DamageType == DamageTypes.Scp207)
             {
                 ev.IsAllowed = false;
             }
@@ -278,10 +269,11 @@
                     player.IsGodModeEnabled = false;
                 }
 
-                if (Config.ColaMultiplier != 0)
+                if (Config.MovementBoost != 0)
                 {
-                    player.DisableEffect<Scp207>();
+                    player.DisableEffect<MovementBoost>();
                 }
+
             }
 
             if (Config.TurnedPlayers)

@@ -1,15 +1,13 @@
 ﻿namespace WaitAndChillReborn
 {
     using Exiled.API.Enums;
-    using Exiled.API.Extensions;
     using Exiled.API.Features;
     using MEC;
     using System.Collections.Generic;
     using System.Linq;
     using UnityEngine;
     using MapGeneration.Distributors;
-
-    using Random = UnityEngine.Random;
+    using Exiled.API.Extensions;
 
     public partial class Handler
     {
@@ -131,6 +129,7 @@
             if (Config.LobbyRoom.Contains("TOWER4")) possibleSpawnPoses.Add(new Vector3(-21.81f, 1019.89f, -43.45f));
             if (Config.LobbyRoom.Contains("NUKE_SURFACE")) possibleSpawnPoses.Add(new Vector3(40.68f, 988.86f, -36.2f));
 
+            
             if (Config.LobbyRoom.Contains("WC"))
             {
                 foreach (Transform transform in ItemSpawnpoint.RandomInstances.First(x => x.name == "Random Keycard")._positionVariants)
@@ -195,13 +194,14 @@
             }
 
             choosedSpawnPos = possibleSpawnPoses[Random.Range(0, possibleSpawnPoses.Count)];
+
         }
 
         internal void Scp079sDoors(bool state)
         {
             Vector3 secondDoorPos = Map.GetDoorByName("079_SECOND").Base.transform.position;
 
-            foreach (Door controlRoomDoor in Map.Doors.Where(d => Vector3.Distance(d.Base.transform.position, secondDoorPos) < 5f))
+            foreach (Door controlRoomDoor in Map.Doors.Where(d => (d.Base.transform.position - secondDoorPos).sqrMagnitude < 25f))
             {
                 controlRoomDoor.IsOpen = state;
             }
