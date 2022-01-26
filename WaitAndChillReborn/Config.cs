@@ -71,8 +71,11 @@
         [Description("Disallow players triggering SCP-096 and stopping from moving SCP-173, while in lobby.")]
         public bool TurnedPlayers { get; private set; } = true;
 
-        [Description("Give players a movement boost, while in lobby. (set 0 to disable)")]
-        public byte MovementBoost { get; private set; } = 50;
+        [Description("Effects that will be enabled, while in lobby. The number if the effect intensity.")]
+        public Dictionary<EffectType, byte> LobbyEffects { get; private set; } = new Dictionary<EffectType, byte>()
+        {
+            { EffectType.MovementBoost, 50 },
+        };
 
         [Description("Use hints instead of broadcasts for text stuff. (broadcasts are not recommended)")]
         public bool UseHints { get; private set; } = true;

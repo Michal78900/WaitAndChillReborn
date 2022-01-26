@@ -87,10 +87,10 @@
                         ev.Player.Position = possibleSpawnPoses[Random.Range(0, possibleSpawnPoses.Count)];
                     }
 
-                    if (Config.MovementBoost != 0)
+                    foreach (var effect in Config.LobbyEffects)
                     {
-                        ev.Player.EnableEffect<MovementBoost>();
-                        ev.Player.ChangeEffectIntensity<MovementBoost>(50);
+                        ev.Player.EnableEffect(effect.Key);
+                        ev.Player.ChangeEffectIntensity(effect.Key, effect.Value);
                     }
 
                     Timing.CallDelayed(0.3f, () =>
@@ -129,10 +129,10 @@
                         ev.Target.Position = possibleSpawnPoses[Random.Range(0, possibleSpawnPoses.Count)];
                     }
 
-                    if (Config.MovementBoost != 0)
+                    foreach (var effect in Config.LobbyEffects)
                     {
-                        ev.Target.EnableEffect<MovementBoost>();
-                        ev.Target.ChangeEffectIntensity<MovementBoost>(50);
+                        ev.Target.EnableEffect(effect.Key);
+                        ev.Target.ChangeEffectIntensity(effect.Key, effect.Value);
                     }
 
                     Timing.CallDelayed(0.3f, () =>
@@ -269,11 +269,16 @@
                     player.IsGodModeEnabled = false;
                 }
 
-                if (Config.MovementBoost != 0)
+                foreach (KeyValuePair<System.Type, PlayerEffect> effect in player.ReferenceHub.playerEffectsController.AllEffects)
                 {
-                    player.DisableEffect<MovementBoost>();
-                }
+                    if (effect.Key == null || effect.Value == null)
+                    {
+                        Log.Error("Effect is null!");
+                        continue;
+                    }
 
+                    effect.Value.IsEnabled = false;
+                }
             }
 
             if (Config.TurnedPlayers)
