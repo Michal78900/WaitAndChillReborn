@@ -10,12 +10,12 @@
     using UnityEngine;
     using Exiled.API.Features;
     using Configs;
+    using GameCore;
 
     using static API.API;
 
     using PlayerEvent = Exiled.Events.Handlers.Player;
     using ServerEvent = Exiled.Events.Handlers.Server;
-    using GameCore;
 
     internal static class ArenaEventHandler
     {
@@ -67,6 +67,7 @@
             if (WaitAndChillReborn.Singleton.Config.DisplayWaitMessage)
                 LobbyTimer = Timing.RunCoroutine(LobbyMethods.LobbyTimer());
 
+            Arena.List.Clear();
             ArenaClock = Timing.RunCoroutine(ArenaMethods.ArenaClock());
         }
 
