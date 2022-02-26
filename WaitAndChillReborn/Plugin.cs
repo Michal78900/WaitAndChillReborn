@@ -17,14 +17,21 @@
         {
             Singleton = this;
 
-            if (Loader.Plugins.FirstOrDefault(x => x.Name == "MapEditorReborn") != null)
-                API.API.MapEditorRebornInstalled = true;
+            API.API.MapEditorRebornInstalled = Loader.Plugins.FirstOrDefault(x => x.Name == "MapEditorReborn" && x.Config.IsEnabled) != null;
 
             if (Config.ArenaMode)
             {
-                ArenaEventHandler.RegisterEvents();
+                if (!API.API.MapEditorRebornInstalled)
+                {
+                    Log.Error("You are trying to use Arena mode, but MapEditorReborn isn't installed or enabled!\nEnabling Lobby mode instead...");
+                    LobbyEventHandler.RegisterEvents();
+                }
+                else
+                {
+                    ArenaEventHandler.RegisterEvents();
+                }
             }
-            else if (API.API.MapEditorRebornInstalled)
+            else
             {
                 LobbyEventHandler.RegisterEvents();
             }

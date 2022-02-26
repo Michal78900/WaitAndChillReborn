@@ -24,7 +24,7 @@
             "939",
         };
 
-        [Description("Instead of choosing one lobby room, should plugin use all of lobby rooms on the list? Player when they join will be teleported to the random lobby room.")]
+        [Description("Whether plugin should use all of lobby rooms on the list instead only one. Player when they join will be teleported to the random lobby room.")]
         public bool MultipleRooms { get; private set; } = false;
 
         [Description("The time (in seconds) between player joining on the server and him changing role while in lobby (change this number if some players aren't spawned / are spawned as a None class.")]
@@ -52,14 +52,13 @@
             { AmmoType.Ammo44Cal, 0 },
         };
 
-        [Description("Disallow players triggering SCP-096 and stopping from moving SCP-173, while in lobby.")]
+        [Description("Whether players should NOT be able to trigger SCP-096 and stop moving SCP-173, while in lobby.")]
         public bool TurnedPlayers { get; private set; } = true;
 
-        [Description("Effects that will be enabled, while in lobby. The number if the effect intensity.")]
+        [Description("Effects that will be enabled, while in lobby. The number is the effect intensity.")]
         public Dictionary<EffectType, byte> LobbyEffects { get; private set; } = new Dictionary<EffectType, byte>()
         {
             { EffectType.MovementBoost, 50 },
         };
-
     }
 }

@@ -7,6 +7,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using UnityEngine;
+    using Configs;
 
     public class Arena
     {
@@ -19,7 +20,7 @@
         public static Arena GetEmptyArena()
         {
             Arena arena = List.FirstOrDefault(x => x.IsAvailable);
-            return arena ?? Create(ObjectSpawner.SpawnSchematic("ExampleArena", NextArenaSpawnPosition));
+            return arena ?? Create(ObjectSpawner.SpawnSchematic(GetRandomArenaName(), NextArenaSpawnPosition));
         }
 
         private Arena(SchematicObjectComponent schematic)
@@ -42,7 +43,7 @@
             NetworkServer.Destroy(_ntfSpawnPointObject);
             NetworkServer.Destroy(_ciSpawnPointOjbect);
 
-            NextArenaSpawnPosition += Vector3.back * 250f;
+            NextArenaSpawnPosition += Vector3.back * Config.DistanceBetweenArenas;
 
             IsAvailable = true;
             List.Add(this);
@@ -55,5 +56,9 @@
         public Vector3 CiSpawnPoint { get; }
 
         public bool IsAvailable { get; set; }
+
+        private static string GetRandomArenaName() => Config.ArenaNames[Random.Range(0, Config.ArenaNames.Count)];
+
+        private static readonly ArenaConfig Config = WaitAndChillReborn.Singleton.Config.ArenaConfig;
     }
 }

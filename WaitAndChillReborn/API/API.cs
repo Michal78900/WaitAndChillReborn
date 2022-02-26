@@ -15,7 +15,7 @@
 
         public static bool IsLobby => !Round.IsStarted && !RoundSummary.singleton.RoundEnded;
 
-        public static bool MapEditorRebornInstalled { get; internal set; } = false;
+        public static bool MapEditorRebornInstalled { get; internal set; }
 
         public const string AtachedArenaSessionVarName = "WACR_AttachedArena";
     }
