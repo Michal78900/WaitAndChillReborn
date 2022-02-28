@@ -25,24 +25,34 @@
 
         private Arena(SchematicObjectComponent schematic)
         {
-            GameObject _ntfSpawnPointObject = schematic.AttachedBlocks.FirstOrDefault(x => x.name == "NTF_SPAWN");
-            GameObject _ciSpawnPointOjbect = schematic.AttachedBlocks.FirstOrDefault(x => x.name == "CI_SPAWN");
+            List<Vector3> ntfList = new List<Vector3>();
+            List<Vector3> ciList = new List<Vector3>();
 
-            if (_ntfSpawnPointObject == null || _ciSpawnPointOjbect == null)
+            foreach (GameObject block in schematic.AttachedBlocks.ToList())
+            {
+                if (block.name.Contains(NtfSpawnPointName))
+                {
+                    ntfList.Add(block.transform.position);
+                    schematic.AttachedBlocks.Remove(block);
+                    NetworkServer.Destroy(block);
+                }
+                else if (block.name.Contains(CiSpawnPointName))
+                {
+                    ciList.Add(block.transform.position);
+                    schematic.AttachedBlocks.Remove(block);
+                    NetworkServer.Destroy(block);
+                }
+            }
+
+            if (ntfList.Count == 0 || ciList.Count == 0)
             {
                 Log.Error($"One or more of the spawnpoints in \"{schematic.Name}\" arena are missing.");
                 return;
             }
 
             Schematic = schematic;
-            NtfSpawnPoint = _ntfSpawnPointObject.transform.position;
-            CiSpawnPoint = _ciSpawnPointOjbect.transform.position;
-
-            schematic.AttachedBlocks.Remove(_ntfSpawnPointObject);
-            schematic.AttachedBlocks.Remove(_ciSpawnPointOjbect);
-            NetworkServer.Destroy(_ntfSpawnPointObject);
-            NetworkServer.Destroy(_ciSpawnPointOjbect);
-
+            NtfSpawnPoints = ntfList.AsReadOnly();
+            CiSpawnPoints = ciList.AsReadOnly();
             NextArenaSpawnPosition += Vector3.back * Config.DistanceBetweenArenas;
 
             IsAvailable = true;
@@ -51,13 +61,16 @@
 
         public SchematicObjectComponent Schematic { get; }
 
-        public Vector3 NtfSpawnPoint { get; }
+        public IReadOnlyList<Vector3> NtfSpawnPoints { get; }
 
-        public Vector3 CiSpawnPoint { get; }
+        public IReadOnlyList<Vector3> CiSpawnPoints { get; }
 
         public bool IsAvailable { get; set; }
 
         private static string GetRandomArenaName() => Config.ArenaNames[Random.Range(0, Config.ArenaNames.Count)];
+
+        private const string NtfSpawnPointName = "NTF_SPAWN";
+        private const string CiSpawnPointName = "CI_SPAWN";
 
         private static readonly ArenaConfig Config = WaitAndChillReborn.Singleton.Config.ArenaConfig;
     }

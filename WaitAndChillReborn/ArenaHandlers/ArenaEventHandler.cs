@@ -85,7 +85,7 @@
                 return;
 
             if (ev.Player.TryGetSessionVariable(AtachedArenaSessionVarName, out Arena arena))
-                ev.Position = ev.RoleType == RoleType.NtfCaptain ? arena.NtfSpawnPoint : arena.CiSpawnPoint;
+                ev.Position = ev.RoleType == RoleType.NtfCaptain ? arena.NtfSpawnPoints[Random.Range(0, arena.NtfSpawnPoints.Count)] : arena.CiSpawnPoints[Random.Range(0, arena.CiSpawnPoints.Count)];
 
             ev.Player.ClearInventory();
             ev.Player.AddItem(ItemType.ArmorHeavy);
@@ -103,7 +103,7 @@
             if (!IsLobby)
                 return;
 
-            if (ev.Schematic.Base.SchematicName != "ExampleArena")
+            if (!Config.ArenaNames.Contains(ev.Schematic.Name))
                 return;
 
             Item weapon = ev.Player.Items.FirstOrDefault(x => x.IsWeapon);
@@ -140,6 +140,9 @@
 
             Timing.CallDelayed(Config.RespawnTime, () =>
             {
+                if (!IsLobby)
+                    return;
+
                 ev.Killer.ClearInventory();
                 ev.Killer.Ammo.Clear();
 
