@@ -8,6 +8,8 @@
     using API.Features;
     using Configs;
 
+    using static API.API;
+
     internal static class ArenaMethods
     {
         internal static IEnumerator<float> ArenaClock()
@@ -35,14 +37,14 @@
                     Arena arena = Arena.GetEmptyArena();
                     arena.IsAvailable = false;
 
-                    if (!ntf.SessionVariables.ContainsKey(API.API.AtachedArenaSessionVarName))
-                        ntf.SessionVariables.Add(API.API.AtachedArenaSessionVarName, null);
+                    if (!ntf.SessionVariables.ContainsKey(AtachedArenaSessionVarName))
+                        ntf.SessionVariables.Add(AtachedArenaSessionVarName, null);
 
-                    if (!ci.SessionVariables.ContainsKey(API.API.AtachedArenaSessionVarName))
-                        ci.SessionVariables.Add(API.API.AtachedArenaSessionVarName, null);
+                    if (!ci.SessionVariables.ContainsKey(AtachedArenaSessionVarName))
+                        ci.SessionVariables.Add(AtachedArenaSessionVarName, null);
 
-                    ntf.SessionVariables[API.API.AtachedArenaSessionVarName] = arena;
-                    ci.SessionVariables[API.API.AtachedArenaSessionVarName] = arena;
+                    ntf.SessionVariables[AtachedArenaSessionVarName] = arena;
+                    ci.SessionVariables[AtachedArenaSessionVarName] = arena;
 
                     SetupPlayer(ntf, RoleType.NtfCaptain);
                     SetupPlayer(ci, RoleType.ChaosMarauder);
@@ -59,17 +61,20 @@
         {
             Timing.CallDelayed(0.25f, () =>
             {
-                player.Role.Type = roleType;
+                if (IsLobby)
+                    player.Role.Type = roleType;
             });
 
             Timing.CallDelayed(0.3f, () =>
             {
-                player.ClearInventory();
+                if (IsLobby)
+                    player.ClearInventory();
             });
 
             Timing.CallDelayed(0.5f, () =>
             {
-                player.AddItem(ItemType.ArmorHeavy);
+                if (IsLobby)
+                    player.AddItem(ItemType.ArmorHeavy);
             });
         }
 
