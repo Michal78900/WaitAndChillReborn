@@ -2,7 +2,7 @@
 {
     using Exiled.API.Features;
     using MapEditorReborn.API.Features;
-    using MapEditorReborn.API.Features.Components.ObjectComponents;
+    using MapEditorReborn.API.Features.Objects;
     using Mirror;
     using System.Collections.Generic;
     using System.Linq;
@@ -15,7 +15,7 @@
 
         public static List<Arena> List = new List<Arena>();
 
-        public static Arena Create(SchematicObjectComponent schematic) => new Arena(schematic);
+        public static Arena Create(SchematicObject schematic) => new Arena(schematic);
 
         public static Arena GetEmptyArena()
         {
@@ -23,7 +23,7 @@
             return arena ?? Create(ObjectSpawner.SpawnSchematic(GetRandomArenaName(), NextArenaSpawnPosition));
         }
 
-        private Arena(SchematicObjectComponent schematic)
+        private Arena(SchematicObject schematic)
         {
             List<Vector3> ntfList = new List<Vector3>();
             List<Vector3> ciList = new List<Vector3>();
@@ -59,7 +59,7 @@
             List.Add(this);
         }
 
-        public SchematicObjectComponent Schematic { get; }
+        public SchematicObject Schematic { get; }
 
         public IReadOnlyList<Vector3> NtfSpawnPoints { get; }
 
