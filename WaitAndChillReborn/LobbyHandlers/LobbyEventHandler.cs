@@ -89,7 +89,7 @@
             Scp173.TurnedPlayers.Clear();
             Scp096.TurnedPlayers.Clear();
 
-            Timing.CallDelayed(0.1f, () => LobbyMethods.SpawnManager());
+            Timing.CallDelayed(0.1f, () => LobbyMethods.SetupAvailablePositions());
         }
 
         private static void OnVerified(VerifiedEventArgs ev)
@@ -97,7 +97,8 @@
             if (!IsLobby)
                 return;
 
-            ev.Player.SendFakeSyncVar(RoundStart.singleton.netIdentity, typeof(RoundStart), nameof(RoundStart.NetworkTimer), (short)-1);
+            if (!WaitAndChillReborn.Singleton.Config.GlobalVoiceChat)
+                ev.Player.SendFakeSyncVar(RoundStart.singleton.netIdentity, typeof(RoundStart), nameof(RoundStart.NetworkTimer), (short)-1);
 
             if (RoundStart.singleton.NetworkTimer > 1 || RoundStart.singleton.NetworkTimer == -2)
             {

@@ -3,6 +3,7 @@
     using Exiled.API.Enums;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using UnityEngine;
 
     public sealed class LobbyConfig
     {
@@ -22,6 +23,12 @@
             "106",
             "173",
             "939",
+        };
+
+        [Description("List of static positions where player can spawn:")]
+        public List<Vector3> StaticLobbyPositions { get; private set; } = new List<Vector3>()
+        {
+            new Vector3(-1f, -1f, -1f),
         };
 
         [Description("Whether plugin should use all of lobby rooms on the list instead only one. Player when they join will be teleported to the random lobby room.")]

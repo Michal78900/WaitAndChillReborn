@@ -8,8 +8,11 @@
     using System.Linq;
     using UnityEngine;
     using Configs;
+    using System;
 
-    public class Arena
+    using Random = UnityEngine.Random;
+
+    public unsafe class Arena
     {
         public static Vector3 NextArenaSpawnPosition = new Vector3(1000f, 1000f, 0f);
 
@@ -25,8 +28,8 @@
 
         private Arena(SchematicObject schematic)
         {
-            List<Vector3> ntfList = new List<Vector3>();
-            List<Vector3> ciList = new List<Vector3>();
+            List<Vector3> ntfList = NorthwoodLib.Pools.ListPool<Vector3>.Shared.Rent();
+            List<Vector3> ciList = NorthwoodLib.Pools.ListPool<Vector3>.Shared.Rent();
 
             foreach (GameObject block in schematic.AttachedBlocks.ToList())
             {
@@ -57,6 +60,9 @@
 
             IsAvailable = true;
             List.Add(this);
+
+            NorthwoodLib.Pools.ListPool<Vector3>.Shared.Return(ntfList);
+            NorthwoodLib.Pools.ListPool<Vector3>.Shared.Return(ciList);
         }
 
         public SchematicObject Schematic { get; }

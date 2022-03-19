@@ -73,10 +73,8 @@
 
         private static void OnVerified(VerifiedEventArgs ev)
         {
-            if (!IsLobby)
-                return;
-
-            ev.Player.SendFakeSyncVar(RoundStart.singleton.netIdentity, typeof(RoundStart), nameof(RoundStart.NetworkTimer), (short)-1);
+            if (IsLobby && !WaitAndChillReborn.Singleton.Config.GlobalVoiceChat)
+                ev.Player.SendFakeSyncVar(RoundStart.singleton.netIdentity, typeof(RoundStart), nameof(RoundStart.NetworkTimer), (short)-1);
         }
 
         private static void OnSpawning(SpawningEventArgs ev)
@@ -183,11 +181,16 @@
         {
             Timing.KillCoroutines(ArenaClock);
 
+            foreach (Player player in Player.List)
+            {
+                player.ClearInventory();
+                player.Role.Type = RoleType.Spectator;
+            }
+
             foreach (Arena arena in Arena.List)
             {
                 arena.Schematic.Destroy();
             }
-
             Arena.List.Clear();
         }
 

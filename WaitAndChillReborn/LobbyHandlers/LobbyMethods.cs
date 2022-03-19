@@ -79,7 +79,7 @@
             }
         }
 
-        internal static void SpawnManager()
+        internal static void SetupAvailablePositions()
         {
             LobbyAvailableSpawnPoints.Clear();
 
@@ -156,6 +156,14 @@
                 {
                     LobbyAvailableSpawnPoints.Add(role.Value.GetRandomSpawnProperties().Item1);
                 }
+            }
+
+            foreach (Vector3 position in Config.StaticLobbyPositions)
+            {
+                if (position == -Vector3.one)
+                    continue;
+
+                LobbyAvailableSpawnPoints.Add(position);
             }
 
             LobbyChoosedSpawnPoint = LobbyAvailableSpawnPoints[Random.Range(0, LobbyAvailableSpawnPoints.Count)];
