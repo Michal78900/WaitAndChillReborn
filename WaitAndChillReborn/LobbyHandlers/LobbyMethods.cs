@@ -126,7 +126,7 @@
 
             if (Config.LobbyRoom.Contains("INTERCOM"))
             {
-                LobbyAvailableSpawnPoints.Add(Intercom.host._area.position);
+                LobbyAvailableSpawnPoints.Add(global::Intercom.host._area.position);
             }
 
             if (Config.LobbyRoom.Contains("079"))

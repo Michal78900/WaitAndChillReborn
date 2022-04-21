@@ -28,8 +28,9 @@
         internal static void RegisterEvents()
         {
             ServerEvent.WaitingForPlayers += OnWaitingForPlayers;
-
+            
             PlayerEvent.Verified += OnVerified;
+            PlayerMovementSync.OnPlayerSpawned += OnSpawned;
             PlayerEvent.Dying += OnDying;
             PlayerEvent.Died += OnDied;
 
@@ -113,6 +114,7 @@
                     }
                 });
 
+                /*
                 Timing.CallDelayed(Config.SpawnDelay * 2f, () =>
                 {
                     if (!Config.MultipleRooms)
@@ -141,8 +143,37 @@
                         }
                     });
                 });
+                */
             }
         }
+
+        private static void OnSpawned(ReferenceHub obj)
+        {
+            if (!IsLobby)
+                return;
+
+            if (RoundStart.singleton.NetworkTimer <= 1 && RoundStart.singleton.NetworkTimer != -2)
+                return;
+
+            Player player = Player.Get(obj);
+            _ = !Config.MultipleRooms ? player.Position = LobbyChoosedSpawnPoint : player.Position = LobbyAvailableSpawnPoints[Random.Range(0, LobbyAvailableSpawnPoints.Count)];
+
+            foreach (var effect in Config.LobbyEffects)
+            {
+                player.EnableEffect(effect.Key);
+                player.ChangeEffectIntensity(effect.Key, effect.Value);
+            }
+
+            Timing.CallDelayed(0.3f, () =>
+            {
+                Exiled.CustomItems.API.Extensions.ResetInventory(player, Config.Inventory);
+
+                foreach (var ammo in Config.Ammo)
+                {
+                    player.Ammo[ammo.Key.GetItemType()] = ammo.Value;
+                }
+            });
+        }        
 
         #region Disallowing Events
 
