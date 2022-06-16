@@ -86,6 +86,11 @@
                 Timing.KillCoroutines(LobbyTimer);
             }
 
+            if (Server.FriendlyFire)
+            {
+                FriendlyFireConfig.PauseDetector = true;
+            }
+
             if (WaitAndChillReborn.Singleton.Config.DisplayWaitMessage)
                 LobbyTimer = Timing.RunCoroutine(LobbyMethods.LobbyTimer());
 
@@ -367,6 +372,11 @@
             {
                 Scp096.TurnedPlayers.Clear();
                 Scp173.TurnedPlayers.Clear();
+            }
+
+            if (Server.FriendlyFire)
+            {
+                FriendlyFireConfig.PauseDetector = false;
             }
 
             LobbyMethods.Scp079sDoors(false);
