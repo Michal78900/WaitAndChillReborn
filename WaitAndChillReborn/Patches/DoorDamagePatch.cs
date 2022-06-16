@@ -7,6 +7,6 @@
     [HarmonyPatch(typeof(BreakableDoor), nameof(BreakableDoor.ServerDamage))]
     internal static class DoorDamagePatch
     {
-        private static bool Prefix(BreakableDoor __instance, float hp, DoorDamageType type) => !(Handler.IsLobby && type != DoorDamageType.ServerCommand);
+        private static bool Prefix(BreakableDoor __instance, float hp, DoorDamageType type) => !(API.API.IsLobby && type != DoorDamageType.ServerCommand);
     }
 }

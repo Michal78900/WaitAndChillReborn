@@ -4,9 +4,9 @@
     using InventorySystem.Items.Firearms.Modules;
     using UnityEngine;
 
-    [HarmonyPatch(typeof(StandardHitregBase), nameof(StandardHitregBase.PlaceBullethole))]
+    [HarmonyPatch(typeof(StandardHitregBase), nameof(StandardHitregBase.PlaceBulletholeDecal))]
     internal static class BulletHolePatch
     {
-        private static bool Prefix(StandardHitregBase __instance, Ray ray, RaycastHit hit) => !Handler.IsLobby;
+        private static bool Prefix(StandardHitregBase __instance, Ray ray, RaycastHit hit) => !API.API.IsLobby;
     }
 }
