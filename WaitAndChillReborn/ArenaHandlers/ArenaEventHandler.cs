@@ -73,8 +73,8 @@
 
         private static void OnVerified(VerifiedEventArgs ev)
         {
-            if (IsLobby && !WaitAndChillReborn.Singleton.Config.GlobalVoiceChat)
-                ev.Player.SendFakeSyncVar(RoundStart.singleton.netIdentity, typeof(RoundStart), nameof(RoundStart.NetworkTimer), (short)-1);
+            // if (IsLobby && !WaitAndChillReborn.Singleton.Config.GlobalVoiceChat)
+                // ev.Player.SendFakeSyncVar(RoundStart.singleton.netIdentity, typeof(RoundStart), nameof(RoundStart.NetworkTimer), (short)-1);
         }
 
         private static void OnSpawning(SpawningEventArgs ev)

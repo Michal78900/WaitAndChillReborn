@@ -22,15 +22,16 @@
     using ServerEvent = Exiled.Events.Handlers.Server;
     using MapEvent = Exiled.Events.Handlers.Map;
     using Scp106Event = Exiled.Events.Handlers.Scp106;
+    using Exiled.API.Features.Items;
 
     internal static class LobbyEventHandler
     {
         internal static void RegisterEvents()
         {
             ServerEvent.WaitingForPlayers += OnWaitingForPlayers;
-            
+
             PlayerEvent.Verified += OnVerified;
-            PlayerMovementSync.OnPlayerSpawned += OnSpawned;
+            PlayerEvent.Spawned += OnSpawned;
             PlayerEvent.Dying += OnDying;
             PlayerEvent.Died += OnDied;
 
@@ -55,6 +56,7 @@
             ServerEvent.WaitingForPlayers -= OnWaitingForPlayers;
 
             PlayerEvent.Verified -= OnVerified;
+            PlayerEvent.Spawned -= OnSpawned;
             PlayerEvent.Dying -= OnDying;
             PlayerEvent.Died -= OnDied;
 
@@ -91,6 +93,27 @@
             Scp096.TurnedPlayers.Clear();
 
             Timing.CallDelayed(0.1f, () => LobbyMethods.SetupAvailablePositions());
+
+            Timing.CallDelayed(1f, () =>
+            {
+
+                foreach (Pickup pickup in Map.Pickups)
+                {
+                    try
+                    {
+                        if (!pickup.Locked)
+                        {
+                            pickup.Locked = true;
+                            pickup.Base.GetComponent<Rigidbody>().isKinematic = true;
+                            _lockedPickups.Add(pickup);
+                        }
+                    }
+                    catch (System.Exception)
+                    {
+                        continue;
+                    }
+                }
+            });
         }
 
         private static void OnVerified(VerifiedEventArgs ev)
@@ -98,8 +121,8 @@
             if (!IsLobby)
                 return;
 
-            if (!WaitAndChillReborn.Singleton.Config.GlobalVoiceChat)
-                ev.Player.SendFakeSyncVar(RoundStart.singleton.netIdentity, typeof(RoundStart), nameof(RoundStart.NetworkTimer), (short)-1);
+            // if (!WaitAndChillReborn.Singleton.Config.GlobalVoiceChat)
+                // ev.Player.SendFakeSyncVar(RoundStart.singleton.netIdentity, typeof(RoundStart), nameof(RoundStart.NetworkTimer), (short)-1);
 
             if (RoundStart.singleton.NetworkTimer > 1 || RoundStart.singleton.NetworkTimer == -2)
             {
@@ -147,7 +170,7 @@
             }
         }
 
-        private static void OnSpawned(ReferenceHub obj)
+        private static void OnSpawned(SpawnedEventArgs ev)
         {
             if (!IsLobby)
                 return;
@@ -155,25 +178,24 @@
             if (RoundStart.singleton.NetworkTimer <= 1 && RoundStart.singleton.NetworkTimer != -2)
                 return;
 
-            Player player = Player.Get(obj);
-            _ = !Config.MultipleRooms ? player.Position = LobbyChoosedSpawnPoint : player.Position = LobbyAvailableSpawnPoints[Random.Range(0, LobbyAvailableSpawnPoints.Count)];
+            _ = !Config.MultipleRooms ? ev.Player.Position = LobbyChoosedSpawnPoint : ev.Player.Position = LobbyAvailableSpawnPoints[Random.Range(0, LobbyAvailableSpawnPoints.Count)];
 
             foreach (var effect in Config.LobbyEffects)
             {
-                player.EnableEffect(effect.Key);
-                player.ChangeEffectIntensity(effect.Key, effect.Value);
+                ev.Player.EnableEffect(effect.Key);
+                ev.Player.ChangeEffectIntensity(effect.Key, effect.Value);
             }
 
             Timing.CallDelayed(0.3f, () =>
             {
-                Exiled.CustomItems.API.Extensions.ResetInventory(player, Config.Inventory);
+                Exiled.CustomItems.API.Extensions.ResetInventory(ev.Player, Config.Inventory);
 
                 foreach (var ammo in Config.Ammo)
                 {
-                    player.Ammo[ammo.Key.GetItemType()] = ammo.Value;
+                    ev.Player.Ammo[ammo.Key.GetItemType()] = ammo.Value;
                 }
             });
-        }        
+        }
 
         #region Disallowing Events
 
@@ -353,7 +375,17 @@
             {
                 Timing.KillCoroutines(LobbyTimer);
             }
+
+            foreach (Pickup pickup in _lockedPickups)
+            {
+                pickup.Locked = false;
+                pickup.Base.GetComponent<Rigidbody>().isKinematic = false;
+            }
+
+            _lockedPickups.Clear();
         }
+
+        private static List<Pickup> _lockedPickups = new List<Pickup>();
 
         private static readonly LobbyConfig Config = WaitAndChillReborn.Singleton.Config.LobbyConfig;
     }

@@ -12,8 +12,8 @@
         [Description("Whether the Arena mode should be used instead Lobby mode. (requires MapEditorReborn plugin and at least one valid arena map)")]
         public bool ArenaMode { get; private set; } = false;
 
-        [Description("Whether the global voice chat should be used while in lobby. Setting this to true WILL DISABLE player movement animations while in lobby.")]
-        public bool GlobalVoiceChat { get; private set; } = false;
+        // [Description("Whether the global voice chat should be used while in lobby. Setting this to true WILL DISABLE player movement animations while in lobby.")]
+        // public bool GlobalVoiceChat { get; private set; } = false;
 
         [Description("Whether the wait message should be displayed.")]
         public bool DisplayWaitMessage { get; private set; } = true;
