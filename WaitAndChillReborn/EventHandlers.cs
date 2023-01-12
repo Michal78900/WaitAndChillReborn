@@ -219,11 +219,13 @@
 
         private static void OnRoundStarted()
         {
+            /*
             foreach (Player player in Player.List)
             {
                 player.ClearInventory();
                 player.Role.Set(RoleTypeId.Spectator);
             }
+            */
 
             foreach (ThrownProjectile throwable in Object.FindObjectsOfType<ThrownProjectile>())
             {
