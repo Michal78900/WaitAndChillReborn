@@ -3,12 +3,13 @@
     using Exiled.API.Enums;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using PlayerRoles;
     using UnityEngine;
 
     public sealed class LobbyConfig
     {
         [Description("List of lobbys (rooms) where players can spawn: (list of all possible rooms can be found on plugin's GitHub)")]
-        public List<string> LobbyRoom { get; private set; } = new List<string>()
+        public List<string> LobbyRoom { get; private set; } = new()
         {
             "TOWER1",
             "TOWER2",
@@ -26,7 +27,7 @@
         };
 
         [Description("List of static positions where player can spawn:")]
-        public List<Vector3> StaticLobbyPositions { get; private set; } = new List<Vector3>()
+        public List<Vector3> StaticLobbyPositions { get; private set; } = new()
         {
             new Vector3(-1f, -1f, -1f),
         };
@@ -38,19 +39,19 @@
         public float SpawnDelay { get; private set; } = 0.25f;
 
         [Description("List of roles which players can spawn as:")]
-        public List<RoleType> RolesToChoose { get; private set; } = new List<RoleType>()
+        public List<RoleTypeId> RolesToChoose { get; private set; } = new()
         {
-            RoleType.Tutorial,
+            RoleTypeId.Tutorial,
         };
 
         [Description("List of items given to a player while in lobby: (supports CustomItems)")]
-        public List<string> Inventory { get; private set; } = new List<string>()
+        public List<string> Inventory { get; private set; } = new()
         {
-            "Coin",
+            ItemType.Coin.ToString(),
         };
 
         [Description("List of ammo given to a player while in lobby:")]
-        public Dictionary<AmmoType, ushort> Ammo { get; private set; } = new Dictionary<AmmoType, ushort>()
+        public Dictionary<AmmoType, ushort> Ammo { get; private set; } = new()
         {
             { AmmoType.Nato556, 0 },
             { AmmoType.Nato762, 0 },
@@ -63,7 +64,7 @@
         public bool TurnedPlayers { get; private set; } = true;
 
         [Description("Effects that will be enabled, while in lobby. The number is the effect intensity.")]
-        public Dictionary<EffectType, byte> LobbyEffects { get; private set; } = new Dictionary<EffectType, byte>()
+        public Dictionary<EffectType, byte> LobbyEffects { get; private set; } = new()
         {
             { EffectType.MovementBoost, 50 },
         };

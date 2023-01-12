@@ -1,65 +1,67 @@
-﻿namespace WaitAndChillReborn.Methods
+﻿namespace WaitAndChillReborn
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using Configs;
     using Exiled.API.Enums;
     using Exiled.API.Extensions;
     using Exiled.API.Features;
     using MapGeneration.Distributors;
     using MEC;
-    using System.Collections.Generic;
-    using System.Linq;
+    using PlayerRoles;
     using UnityEngine;
-    using Configs;
-
     using static API.API;
+    
     internal static class LobbyMethods
     {
         internal static IEnumerator<float> LobbyTimer()
         {
             while (!Round.IsStarted)
             {
-                string text = string.Empty;
+                StringBuilder stringBuilder = NorthwoodLib.Pools.StringBuilderPool.Shared.Rent();
 
                 if (WaitAndChillReborn.Singleton.Config.HintVertPos != 0 && WaitAndChillReborn.Singleton.Config.HintVertPos < 0)
                 {
                     for (int i = WaitAndChillReborn.Singleton.Config.HintVertPos; i < 0; i++)
                     {
-                        text += "\n";
+                        stringBuilder.Append("\n");
                     }
                 }
 
-                text += Translation.TopMessage;
+                stringBuilder.Append(Translation.TopMessage);
 
-                text += $"\n{Translation.BottomMessage}";
+                stringBuilder.Append($"\n{Translation.BottomMessage}");
 
                 short networkTimer = GameCore.RoundStart.singleton.NetworkTimer;
 
                 switch (networkTimer)
                 {
-                    case -2: text = text.Replace("{seconds}", Translation.ServerIsPaused); break;
+                    case -2: stringBuilder.Replace("{seconds}", Translation.ServerIsPaused); break;
 
-                    case -1: text = text.Replace("{seconds}", Translation.RoundIsBeingStarted); break;
+                    case -1: stringBuilder.Replace("{seconds}", Translation.RoundIsBeingStarted); break;
 
-                    case 1: text = text.Replace("{seconds}", $"{networkTimer} {Translation.OneSecondRemain}"); break;
+                    case 1: stringBuilder.Replace("{seconds}", $"{networkTimer} {Translation.OneSecondRemain}"); break;
 
-                    case 0: text = text.Replace("{seconds}", Translation.RoundIsBeingStarted); break;
+                    case 0: stringBuilder.Replace("{seconds}", Translation.RoundIsBeingStarted); break;
 
-                    default: text = text.Replace("{seconds}", $"{networkTimer} {Translation.XSecondsRemains}"); break;
+                    default: stringBuilder.Replace("{seconds}", $"{networkTimer} {Translation.XSecondsRemains}"); break;
                 }
 
-                if (Player.List.Count() == 1)
+                if (Player.List.Any())
                 {
-                    text = text.Replace("{players}", $"{Player.List.Count()} {Translation.OnePlayerConnected}");
+                    stringBuilder.Replace("{players}", $"{Player.List.Count()} {Translation.OnePlayerConnected}");
                 }
                 else
                 {
-                    text = text.Replace("{players}", $"{Player.List.Count()} {Translation.XPlayersConnected}");
+                    stringBuilder.Replace("{players}", $"{Player.List.Count()} {Translation.XPlayersConnected}");
                 }
 
                 if (WaitAndChillReborn.Singleton.Config.HintVertPos != 0 && WaitAndChillReborn.Singleton.Config.HintVertPos > 0)
                 {
                     for (int i = 0; i < WaitAndChillReborn.Singleton.Config.HintVertPos; i++)
                     {
-                        text += "\n";
+                        stringBuilder.Append("\n");
                     }
                 }
 
@@ -67,11 +69,11 @@
                 {
                     if (WaitAndChillReborn.Singleton.Config.UseHints)
                     {
-                        player.ShowHint(text.ToString(), 1.1f);
+                        player.ShowHint(NorthwoodLib.Pools.StringBuilderPool.Shared.ToStringReturn(stringBuilder), 1.1f);
                     }
                     else
                     {
-                        player.Broadcast(1, text.ToString());
+                        player.Broadcast(1, NorthwoodLib.Pools.StringBuilderPool.Shared.ToStringReturn(stringBuilder));
                     }
                 }
 
@@ -88,11 +90,11 @@
                 Config.LobbyRoom[i] = Config.LobbyRoom[i].ToUpper();
             }
 
-            if (Config.LobbyRoom.Contains("TOWER1")) LobbyAvailableSpawnPoints.Add(new Vector3(54.81f, 1019.41f, -44.906f));
-            if (Config.LobbyRoom.Contains("TOWER2")) LobbyAvailableSpawnPoints.Add(new Vector3(148.6951f, 1019.447f, -19.06371f));
-            if (Config.LobbyRoom.Contains("TOWER3")) LobbyAvailableSpawnPoints.Add(new Vector3(223.1443f, 1026.775f, -18.15129f));
-            if (Config.LobbyRoom.Contains("TOWER4")) LobbyAvailableSpawnPoints.Add(new Vector3(-21.81f, 1019.89f, -43.45f));
-            if (Config.LobbyRoom.Contains("NUKE_SURFACE")) LobbyAvailableSpawnPoints.Add(new Vector3(40.68f, 988.86f, -36.2f));
+            if (Config.LobbyRoom.Contains("TOWER1")) LobbyAvailableSpawnPoints.Add(new Vector3(39.150f, 1014.112f, -31.818f));
+            // if (Config.LobbyRoom.Contains("TOWER2")) LobbyAvailableSpawnPoints.Add(new Vector3(148.6951f, 1019.447f, -19.06371f));
+            // if (Config.LobbyRoom.Contains("TOWER3")) LobbyAvailableSpawnPoints.Add(new Vector3(223.1443f, 1026.775f, -18.15129f));
+            // if (Config.LobbyRoom.Contains("TOWER4")) LobbyAvailableSpawnPoints.Add(new Vector3(-21.81f, 1019.89f, -43.45f));
+            // if (Config.LobbyRoom.Contains("NUKE_SURFACE")) LobbyAvailableSpawnPoints.Add(new Vector3(40.68f, 988.86f, -36.2f));
 
 
             if (Config.LobbyRoom.Contains("WC"))
@@ -108,7 +110,7 @@
                 LobbyAvailableSpawnPoints.Add(ItemSpawnpoint.RandomInstances.First(x => x.name == "COM-15" && x.TriggerDoorName == "GR18")._positionVariants.First().position + Vector3.up);
             }
 
-            Dictionary<RoomType, string> RoomToString = new Dictionary<RoomType, string>()
+            Dictionary<RoomType, string> RoomToString = new ()
             {
                 { RoomType.EzShelter, "SHELTER" },
                 { RoomType.EzGateA, "GATE_A" },
@@ -119,20 +121,20 @@
             {
                 if (RoomToString.ContainsKey(room.Type) && Config.LobbyRoom.Contains(RoomToString[room.Type]))
                 {
-                    var roomPos = room.transform.position;
+                    Vector3 roomPos = room.transform.position;
                     LobbyAvailableSpawnPoints.Add(new Vector3(roomPos.x, roomPos.y + 2f, roomPos.z));
                 }
             }
 
             if (Config.LobbyRoom.Contains("INTERCOM"))
             {
-                LobbyAvailableSpawnPoints.Add(global::Intercom.host._area.position);
+                LobbyAvailableSpawnPoints.Add(Intercom.Transform.position);
             }
 
             if (Config.LobbyRoom.Contains("079"))
             {
                 Vector3 secondDoorPos = Door.Get("079_SECOND").Base.transform.position;
-                LobbyAvailableSpawnPoints.Add(Vector3.MoveTowards(RoleType.Scp079.GetRandomSpawnProperties().Item1, secondDoorPos, 7f));
+                LobbyAvailableSpawnPoints.Add(Vector3.MoveTowards(RoleTypeId.Scp079.GetRandomSpawnLocation().Position, secondDoorPos, 7f));
 
                 Scp079sDoors(true);
             }
@@ -142,19 +144,19 @@
                 LobbyAvailableSpawnPoints.Add(ItemSpawnpoint.AutospawnInstances.First(x => x.AutospawnItem == ItemType.KeycardNTFLieutenant).transform.position + Vector3.up);
             }
 
-            Dictionary<string, RoleType> stringToRole = new Dictionary<string, RoleType>()
+            Dictionary<string, RoleTypeId> stringToRole = new()
             {
-                { "049", RoleType.Scp049 },
-                { "106", RoleType.Scp106 },
-                { "173", RoleType.Scp173 },
-                { "939", RoleType.Scp93953 },
+                { "049", RoleTypeId.Scp049 },
+                { "106", RoleTypeId.Scp106 },
+                { "173", RoleTypeId.Scp173 },
+                { "939", RoleTypeId.Scp939 },
             };
 
-            foreach (var role in stringToRole)
+            foreach (KeyValuePair<string, RoleTypeId> role in stringToRole)
             {
                 if (Config.LobbyRoom.Contains(role.Key))
                 {
-                    LobbyAvailableSpawnPoints.Add(role.Value.GetRandomSpawnProperties().Item1);
+                    LobbyAvailableSpawnPoints.Add(role.Value.GetRandomSpawnLocation().Position);
                 }
             }
 

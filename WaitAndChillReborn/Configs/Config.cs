@@ -1,19 +1,15 @@
-﻿namespace WaitAndChillReborn
+﻿namespace WaitAndChillReborn.Configs
 {
-    using Exiled.API.Interfaces;
     using System.ComponentModel;
-    using Configs;
+    using Exiled.API.Interfaces;
 
     public sealed class Config : IConfig
     {
         [Description("Whether the plugin enabled.")]
         public bool IsEnabled { get; set; } = true;
 
-        [Description("Whether the Arena mode should be used instead Lobby mode. (requires MapEditorReborn plugin and at least one valid arena map)")]
-        public bool ArenaMode { get; private set; } = false;
-
-        // [Description("Whether the global voice chat should be used while in lobby. Setting this to true WILL DISABLE player movement animations while in lobby.")]
-        // public bool GlobalVoiceChat { get; private set; } = false;
+        [Description("Whether debug messages should be shown in a server console.")]
+        public bool Debug { get; set; }
 
         [Description("Whether the wait message should be displayed.")]
         public bool DisplayWaitMessage { get; private set; } = true;
@@ -25,7 +21,5 @@
         public int HintVertPos { get; private set; } = 25;
 
         public LobbyConfig LobbyConfig { get; private set; } = new LobbyConfig();
-
-        public ArenaConfig ArenaConfig { get; private set; } = new ArenaConfig();
     }
 }
