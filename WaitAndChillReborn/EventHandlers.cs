@@ -2,19 +2,19 @@
 {
     using System.Collections.Generic;
     using Configs;
+    using CustomPlayerEffects;
     using Exiled.API.Enums;
     using Exiled.API.Extensions;
     using Exiled.API.Features.Pickups;
+    using Exiled.API.Features.Roles;
     using Exiled.Events.EventArgs.Interfaces;
     using Exiled.Events.EventArgs.Player;
     using GameCore;
     using InventorySystem.Items.ThrowableProjectiles;
     using MEC;
     using Mirror;
-    using PlayerRoles;
     using UnityEngine;
     using static API.API;
-
     using Object = UnityEngine.Object;
     using PlayerEvent = Exiled.Events.Handlers.Player;
     using ServerEvent = Exiled.Events.Handlers.Server;
@@ -73,50 +73,47 @@
             Scp106Event.Teleporting -= OnDeniableEvent;
 
             ServerEvent.RoundStarted -= OnRoundStarted;
-
         }
 
         private static void OnWaitingForPlayers()
         {
-            GameObject.Find("StartRound").transform.localScale = Vector3.zero;
+            if (!WaitAndChillReborn.Singleton.Config.DisplayWaitingForPlayersScreen)
+                GameObject.Find("StartRound").transform.localScale = Vector3.zero;
 
             if (LobbyTimer.IsRunning)
-            {
                 Timing.KillCoroutines(LobbyTimer);
-            }
 
             if (Server.FriendlyFire)
-            {
                 FriendlyFireConfig.PauseDetector = true;
-            }
 
             if (WaitAndChillReborn.Singleton.Config.DisplayWaitMessage)
-                LobbyTimer = Timing.RunCoroutine(LobbyMethods.LobbyTimer());
+                LobbyTimer = Timing.RunCoroutine(Methods.LobbyTimer());
 
-            // Scp173.TurnedPlayers.Clear();
-            // Scp096.TurnedPlayers.Clear();
+            Scp173Role.TurnedPlayers.Clear();
+            Scp096Role.TurnedPlayers.Clear();
 
-            Timing.CallDelayed(0.1f, () => LobbyMethods.SetupAvailablePositions());
+            Timing.CallDelayed(0.1f, () => Methods.SetupAvailablePositions());
 
-            Timing.CallDelayed(1f, () =>
-            {
-                foreach (Pickup pickup in Pickup.List)
+            Timing.CallDelayed(
+                1f,
+                () =>
                 {
-                    try
+                    foreach (Pickup pickup in Pickup.List)
                     {
-                        if (!pickup.IsLocked)
+                        try
                         {
-                            pickup.IsLocked = true;
-                            pickup.Base.GetComponent<Rigidbody>().isKinematic = true;
-                            _lockedPickups.Add(pickup);
+                            if (!pickup.IsLocked)
+                            {
+                                pickup.IsLocked = true;
+                                pickup.Base.GetComponent<Rigidbody>().isKinematic = true;
+                                _lockedPickups.Add(pickup);
+                            }
+                        }
+                        catch (System.Exception)
+                        {
                         }
                     }
-                    catch (System.Exception)
-                    {
-                        
-                    }
-                }
-            });
+                });
         }
 
         private static void OnVerified(VerifiedEventArgs ev)
@@ -126,16 +123,18 @@
             
             if (RoundStart.singleton.NetworkTimer > 1 || RoundStart.singleton.NetworkTimer == -2)
             {
-                Timing.CallDelayed(Config.SpawnDelay, () =>
-                {
-                    ev.Player.Role.Set(Config.RolesToChoose[Random.Range(0, Config.RolesToChoose.Count)]);
-
-                    if (Config.TurnedPlayers)
+                Timing.CallDelayed(
+                    Config.SpawnDelay,
+                    () =>
                     {
-                        // Scp096.TurnedPlayers.Add(ev.Player);
-                        // Scp173.TurnedPlayers.Add(ev.Player);
-                    }
-                });
+                        ev.Player.Role.Set(Config.RolesToChoose[Random.Range(0, Config.RolesToChoose.Count)]);
+
+                        if (Config.TurnedPlayers)
+                        {
+                            Scp096Role.TurnedPlayers.Add(ev.Player);
+                            Scp173Role.TurnedPlayers.Add(ev.Player);
+                        }
+                    });
             }
         }
 
@@ -152,24 +151,26 @@
                 true => LobbyAvailableSpawnPoints[Random.Range(0, LobbyAvailableSpawnPoints.Count)],
                 false => LobbyChoosedSpawnPoint
             };
-            
+
             _ = !Config.MultipleRooms ? ev.Player.Position = LobbyChoosedSpawnPoint : ev.Player.Position = LobbyAvailableSpawnPoints[Random.Range(0, LobbyAvailableSpawnPoints.Count)];
 
-            foreach (KeyValuePair<EffectType, byte> effect in Config.LobbyEffects)
-            {
-                ev.Player.EnableEffect(effect.Key);
-                ev.Player.ChangeEffectIntensity(effect.Key, effect.Value);
-            }
-
-            Timing.CallDelayed(0.3f, () =>
-            {
-                Exiled.CustomItems.API.Extensions.ResetInventory(ev.Player, Config.Inventory);
-
-                foreach (KeyValuePair<AmmoType, ushort> ammo in Config.Ammo)
+            Timing.CallDelayed(
+                0.3f,
+                () =>
                 {
-                    ev.Player.Ammo[ammo.Key.GetItemType()] = ammo.Value;
-                }
-            });
+                    Exiled.CustomItems.API.Extensions.ResetInventory(ev.Player, Config.Inventory);
+
+                    foreach (KeyValuePair<AmmoType, ushort> ammo in Config.Ammo)
+                        ev.Player.Ammo[ammo.Key.GetItemType()] = ammo.Value;
+                    
+                    foreach (KeyValuePair<EffectType, byte> effect in Config.LobbyEffects)
+                    {
+                        if (!ev.Player.TryGetEffect(effect.Key, out StatusEffectBase? effectBase))
+                            continue;
+
+                        effectBase.ServerSetState(effect.Value, float.MaxValue);
+                    }
+                });
         }
 
         private static void OnDeniableEvent(IExiledEvent ev)
@@ -188,87 +189,64 @@
         {
             if (!IsLobby || (RoundStart.singleton.NetworkTimer <= 1 && RoundStart.singleton.NetworkTimer != -2))
                 return;
-            
+
             Timing.CallDelayed(Config.SpawnDelay, () => ev.Player.Role.Set(Config.RolesToChoose[Random.Range(0, Config.RolesToChoose.Count)]));
 
-            Timing.CallDelayed(Config.SpawnDelay * 2.5f, () =>
-            {
-                ev.Player.Position = Config.MultipleRooms switch
+            Timing.CallDelayed(
+                Config.SpawnDelay * 2.5f,
+                () =>
                 {
-                    true => LobbyAvailableSpawnPoints[Random.Range(0, LobbyAvailableSpawnPoints.Count)],
-                    false => LobbyChoosedSpawnPoint
-                };
-                
-                foreach (KeyValuePair<EffectType, byte> effect in Config.LobbyEffects)
-                {
-                    ev.Player.EnableEffect(effect.Key);
-                    ev.Player.ChangeEffectIntensity(effect.Key, effect.Value);
-                }
-
-                Timing.CallDelayed(0.3f, () =>
-                {
-                    Exiled.CustomItems.API.Extensions.ResetInventory(ev.Player, Config.Inventory);
-
-                    foreach (KeyValuePair<AmmoType, ushort> ammo in Config.Ammo)
+                    ev.Player.Position = Config.MultipleRooms switch
                     {
-                        ev.Player.Ammo[ammo.Key.GetItemType()] = ammo.Value;
+                        true => LobbyAvailableSpawnPoints[Random.Range(0, LobbyAvailableSpawnPoints.Count)],
+                        false => LobbyChoosedSpawnPoint
+                    };
+
+                    foreach (KeyValuePair<EffectType, byte> effect in Config.LobbyEffects)
+                    {
+                        ev.Player.EnableEffect(effect.Key);
+                        ev.Player.ChangeEffectIntensity(effect.Key, effect.Value);
                     }
+
+                    Timing.CallDelayed(
+                        0.3f,
+                        () =>
+                        {
+                            Exiled.CustomItems.API.Extensions.ResetInventory(ev.Player, Config.Inventory);
+
+                            foreach (KeyValuePair<AmmoType, ushort> ammo in Config.Ammo)
+                                ev.Player.Ammo[ammo.Key.GetItemType()] = ammo.Value;
+                        });
                 });
-            });
         }
 
         private static void OnRoundStarted()
         {
-            /*
-            foreach (Player player in Player.List)
-            {
-                player.ClearInventory();
-                player.Role.Set(RoleTypeId.Spectator);
-            }
-            */
-
             foreach (ThrownProjectile throwable in Object.FindObjectsOfType<ThrownProjectile>())
             {
                 if (throwable.Rb.velocity.sqrMagnitude <= 1f)
                     continue;
 
                 throwable.transform.position = Vector3.zero;
-                Timing.CallDelayed(1f, () => NetworkServer.Destroy(throwable?.gameObject));
+                Timing.CallDelayed(1f, () => NetworkServer.Destroy(throwable.gameObject));
             }
 
-            /*
             foreach (Player player in Player.List)
-            {
-                foreach (KeyValuePair<System.Type, PlayerEffect> effect in player.ReferenceHub.playerEffectsController.AllEffects)
-                {
-                    if (effect.Key == null || effect.Value == null)
-                    {
-                        Log.Error("Effect is null!");
-                        continue;
-                    }
-
-                    effect.Value.IsEnabled = false;
-                }
-            }
-            */
+                player.DisableAllEffects();
 
             if (Config.TurnedPlayers)
             {
-                // Scp096.TurnedPlayers.Clear();
-                // Scp173.TurnedPlayers.Clear();
+                Scp096Role.TurnedPlayers.Clear();
+                Scp173Role.TurnedPlayers.Clear();
             }
 
             if (Server.FriendlyFire)
-            {
                 FriendlyFireConfig.PauseDetector = false;
-            }
 
-            LobbyMethods.Scp079sDoors(false);
+            Methods.Scp079sDoors(false);
 
             if (LobbyTimer.IsRunning)
-            {
                 Timing.KillCoroutines(LobbyTimer);
-            }
 
             foreach (Pickup pickup in _lockedPickups)
             {

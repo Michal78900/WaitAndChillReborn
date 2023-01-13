@@ -2,7 +2,6 @@
 {
     using GameCore;
     using HarmonyLib;
-    using PlayerRoles;
 
     [HarmonyPatch(typeof(RoundStart), nameof(RoundStart.NetworkTimer), MethodType.Setter)]
     internal static class NetworkTimerPatch

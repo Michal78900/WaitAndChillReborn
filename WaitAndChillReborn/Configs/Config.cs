@@ -11,6 +11,9 @@
         [Description("Whether debug messages should be shown in a server console.")]
         public bool Debug { get; set; }
 
+        [Description("Whether the default waiting for players screen should be displayed.")]
+        public bool DisplayWaitingForPlayersScreen { get; private set; } = false;
+
         [Description("Whether the wait message should be displayed.")]
         public bool DisplayWaitMessage { get; private set; } = true;
 
