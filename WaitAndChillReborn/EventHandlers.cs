@@ -10,11 +10,13 @@
     using Exiled.Events.EventArgs.Interfaces;
     using Exiled.Events.EventArgs.Player;
     using GameCore;
+    using InventorySystem.Items.Pickups;
     using InventorySystem.Items.ThrowableProjectiles;
     using MEC;
     using Mirror;
     using UnityEngine;
     using static API.API;
+
     using Object = UnityEngine.Object;
     using PlayerEvent = Exiled.Events.Handlers.Player;
     using ServerEvent = Exiled.Events.Handlers.Server;
@@ -92,25 +94,31 @@
             Scp173Role.TurnedPlayers.Clear();
             Scp096Role.TurnedPlayers.Clear();
 
-            Timing.CallDelayed(0.1f, () => Methods.SetupAvailablePositions());
-
+            Timing.CallDelayed(0.1f, Methods.SetupAvailablePositions);
+            
             Timing.CallDelayed(
                 1f,
                 () =>
                 {
+                    LockedPickups.Clear();
+                    
                     foreach (Pickup pickup in Pickup.List)
                     {
                         try
                         {
                             if (!pickup.IsLocked)
                             {
-                                pickup.IsLocked = true;
+                                PickupSyncInfo info = pickup.Base.NetworkInfo;
+                                info.Locked = true;
+                                pickup.Base.NetworkInfo = info;
+                                
                                 pickup.Base.GetComponent<Rigidbody>().isKinematic = true;
-                                _lockedPickups.Add(pickup);
+                                LockedPickups.Add(pickup);
                             }
                         }
                         catch (System.Exception)
                         {
+                            // ignored
                         }
                     }
                 });
@@ -247,23 +255,27 @@
 
             if (LobbyTimer.IsRunning)
                 Timing.KillCoroutines(LobbyTimer);
-
-            foreach (Pickup pickup in _lockedPickups)
+            
+            foreach (Pickup pickup in LockedPickups)
             {
                 try
                 {
-                    pickup.IsLocked = false;
+                    PickupSyncInfo info = pickup.Base.NetworkInfo;
+                    info.Locked = false;
+                    pickup.Base.NetworkInfo = info;
+                    
                     pickup.Base.GetComponent<Rigidbody>().isKinematic = false;
                 }
                 catch (System.Exception)
                 {
+                    // ignored
                 }
             }
 
-            _lockedPickups.Clear();
+            LockedPickups.Clear();
         }
 
-        private static readonly HashSet<Pickup> _lockedPickups = new();
+        private static readonly HashSet<Pickup> LockedPickups = new();
         private static readonly LobbyConfig Config = WaitAndChillReborn.Singleton.Config.LobbyConfig;
     }
 }
