@@ -120,7 +120,7 @@
         {
             if (!IsLobby)
                 return;
-            
+
             if (RoundStart.singleton.NetworkTimer > 1 || RoundStart.singleton.NetworkTimer == -2)
             {
                 Timing.CallDelayed(
@@ -162,7 +162,7 @@
 
                     foreach (KeyValuePair<AmmoType, ushort> ammo in Config.Ammo)
                         ev.Player.Ammo[ammo.Key.GetItemType()] = ammo.Value;
-                    
+
                     foreach (KeyValuePair<EffectType, byte> effect in Config.LobbyEffects)
                     {
                         if (!ev.Player.TryGetEffect(effect.Key, out StatusEffectBase? effectBase))
@@ -250,8 +250,14 @@
 
             foreach (Pickup pickup in _lockedPickups)
             {
-                pickup.IsLocked = false;
-                pickup.Base.GetComponent<Rigidbody>().isKinematic = false;
+                try
+                {
+                    pickup.IsLocked = false;
+                    pickup.Base.GetComponent<Rigidbody>().isKinematic = false;
+                }
+                catch (System.Exception)
+                {
+                }
             }
 
             _lockedPickups.Clear();

@@ -49,12 +49,14 @@
                     for (int i = 0; i < WaitAndChillReborn.Singleton.Config.HintVertPos; i++)
                         stringBuilder.Append("\n");
 
+                string text = NorthwoodLib.Pools.StringBuilderPool.Shared.ToStringReturn(stringBuilder);
+                
                 foreach (Player player in Player.List)
                 {
                     if (WaitAndChillReborn.Singleton.Config.UseHints)
-                        player.ShowHint(NorthwoodLib.Pools.StringBuilderPool.Shared.ToStringReturn(stringBuilder), 1.1f);
+                        player.ShowHint(text, 1.1f);
                     else
-                        player.Broadcast(1, NorthwoodLib.Pools.StringBuilderPool.Shared.ToStringReturn(stringBuilder));
+                        player.Broadcast(1, text);
                 }
 
                 yield return Timing.WaitForSeconds(1f);
