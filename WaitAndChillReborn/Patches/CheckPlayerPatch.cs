@@ -1,6 +1,5 @@
 ﻿namespace WaitAndChillReborn.Patches
 {
-    using Exiled.API.Features;
     using HarmonyLib;
     using PlayerRoles;
     using PlayerRoles.RoleAssign;
@@ -10,27 +9,10 @@
     {
         private static bool Prefix(ReferenceHub hub, ref bool __result)
         {
-            if (hub.roleManager.CurrentRole.RoleTypeId == RoleTypeId.Overwatch)
-            {
-                __result = false;
-                return false;
-            }
-
-            /*
-            switch (hub.characterClassManager.InstanceMode)
-            {
-                case ClientInstanceMode.ReadyClient:
-                case ClientInstanceMode.Host:
-                    __result = true;
-                    break;
-
-                default:
-                    __result = false;
-                    break;
-            }
-            */
-
-            __result = hub.characterClassManager.InstanceMode != ClientInstanceMode.DedicatedServer;
+            if (hub == ReferenceHub.HostHub || hub.roleManager.CurrentRole.RoleTypeId == RoleTypeId.Overwatch)
+                return true;
+        
+            __result = true;
             return false;
         }
     }
