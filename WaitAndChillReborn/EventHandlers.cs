@@ -16,7 +16,7 @@
     using Mirror;
     using UnityEngine;
     using static API.API;
-
+    using Log = Exiled.API.Features.Log;
     using Object = UnityEngine.Object;
     using PlayerEvent = Exiled.Events.Handlers.Player;
     using ServerEvent = Exiled.Events.Handlers.Server;
@@ -263,7 +263,7 @@
                     PickupSyncInfo info = pickup.Base.NetworkInfo;
                     info.Locked = false;
                     pickup.Base.NetworkInfo = info;
-                    
+
                     pickup.Base.GetComponent<Rigidbody>().isKinematic = false;
                 }
                 catch (System.Exception)

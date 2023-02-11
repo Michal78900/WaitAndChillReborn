@@ -1,5 +1,6 @@
 ﻿namespace WaitAndChillReborn.Patches
 {
+    using Exiled.API.Features;
     using HarmonyLib;
     using PlayerRoles;
     using PlayerRoles.RoleAssign;
@@ -15,6 +16,7 @@
                 return false;
             }
 
+            /*
             switch (hub.characterClassManager.InstanceMode)
             {
                 case ClientInstanceMode.ReadyClient:
@@ -26,7 +28,9 @@
                     __result = false;
                     break;
             }
+            */
 
+            __result = hub.characterClassManager.InstanceMode != ClientInstanceMode.DedicatedServer;
             return false;
         }
     }
