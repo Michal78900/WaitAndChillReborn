@@ -95,13 +95,13 @@
             Scp096Role.TurnedPlayers.Clear();
 
             Timing.CallDelayed(0.1f, Methods.SetupAvailablePositions);
-            
+
             Timing.CallDelayed(
                 1f,
                 () =>
                 {
                     LockedPickups.Clear();
-                    
+
                     foreach (Pickup pickup in Pickup.List)
                     {
                         try
@@ -111,7 +111,7 @@
                                 PickupSyncInfo info = pickup.Base.NetworkInfo;
                                 info.Locked = true;
                                 pickup.Base.NetworkInfo = info;
-                                
+
                                 pickup.Base.GetComponent<Rigidbody>().isKinematic = true;
                                 LockedPickups.Add(pickup);
                             }
@@ -232,7 +232,7 @@
         {
             foreach (ThrownProjectile throwable in Object.FindObjectsOfType<ThrownProjectile>())
             {
-                if (throwable.Rb.velocity.sqrMagnitude <= 1f)
+                if (throwable.TryGetComponent(out Rigidbody rb) && rb.velocity.sqrMagnitude <= 1f)
                     continue;
 
                 throwable.transform.position = Vector3.zero;
@@ -255,7 +255,7 @@
 
             if (LobbyTimer.IsRunning)
                 Timing.KillCoroutines(LobbyTimer);
-            
+
             foreach (Pickup pickup in LockedPickups)
             {
                 try
