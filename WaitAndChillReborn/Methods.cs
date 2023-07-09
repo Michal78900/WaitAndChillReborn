@@ -43,7 +43,7 @@
                     default: stringBuilder.Replace("{seconds}", $"{networkTimer} {Translation.XSecondsRemains}"); break;
                 }
 
-                stringBuilder.Replace("{players}", Player.List.Any() ? $"{Player.List.Count()} {Translation.OnePlayerConnected}" : $"{Player.List.Count()} {Translation.XPlayersConnected}");
+                stringBuilder.Replace("{players}", Player.List.Count() == 1 ? $"{Player.List.Count()} {Translation.OnePlayerConnected}" : $"{Player.List.Count()} {Translation.XPlayersConnected}");
 
                 if (WaitAndChillReborn.Singleton.Config.HintVertPos != 0 && WaitAndChillReborn.Singleton.Config.HintVertPos > 0)
                     for (int i = 0; i < WaitAndChillReborn.Singleton.Config.HintVertPos; i++)
