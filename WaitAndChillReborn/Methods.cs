@@ -7,6 +7,7 @@
     using Exiled.API.Enums;
     using Exiled.API.Extensions;
     using Exiled.API.Features;
+    using Exiled.API.Features.Doors;
     using MapGeneration.Distributors;
     using MEC;
     using PlayerRoles;
@@ -115,7 +116,7 @@
             }
 
             if (Config.LobbyRoom.Contains("096"))
-                LobbyAvailableSpawnPoints.Add(ItemSpawnpoint.AutospawnInstances.First(x => x.AutospawnItem == ItemType.KeycardNTFLieutenant).transform.position + Vector3.up);
+                LobbyAvailableSpawnPoints.Add(ItemSpawnpoint.AutospawnInstances.First(x => x.AutospawnItem == ItemType.KeycardMTFOperative).transform.position + Vector3.up);
 
             Dictionary<string, RoleTypeId> stringToRole = new()
             {
